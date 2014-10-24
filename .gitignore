@@ -2,7 +2,7 @@
 *.swp
 *.csv
 *.log
-node_modules/
+./node_modules/
 node_latest_armhf.deb
 hello.js
 main.js
