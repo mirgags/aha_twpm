@@ -22,7 +22,7 @@ app.use(function (req, res, next) {
 });
 
 function getTWPMKey() {
-    return fs.readFileSync('./teamwork_key.txt', function (err, data) {
+    var key = fs.readFileSync('./teamwork_key.txt', 'utf-8', function (err, data) {
         if (err) {
             return console.log(err);
         };
@@ -83,16 +83,16 @@ function createTWPMTask (reqObject) {
 };
 
 app.get('/testfile', function (req, res) {
-    var key = fs.readFileSync('./teamwork_key.txt', function (err, data) {
+    createTWPMTask(req);
+/*    var key = fs.readFileSync('./teamwork_key.txt', 'utf-8', function (err, data) {
         if (err) {
             return console.log(err);
         };
         return data;
     });
-    res.on('end', key);
-    var key = getTWPMKey();
     console.log(key);
     res.end(key);
+*/
 });
 
 app.get('/test', function (req, res) {
@@ -151,7 +151,7 @@ app.get('/test', function (req, res) {
 //    console.log('response: ' + responseJSON);
 });
 
-app.post('/aha', textParser, function (req, res, createTWPMTask) { 
+app.post('/hookcatch', function (req, res) { 
     console.log('*****');
     console.log('initial url: ' + req.url);
     console.log('req method: ' + req.method);
@@ -165,10 +165,10 @@ app.post('/aha', textParser, function (req, res, createTWPMTask) {
     };
     console.log(req.body);
     var wholeBody = JSON.parse(req.body);
+    console.log(req.query);
     if(wholeBody['event'] === 'create_feature') {
         console.log('shold create task here');
         console.log('feature: ' + wholeBody.feature.name);
-        createTWPMTask(wholeBody);
     };
     req.on('end', function() {
         res.writeHead(200,{'Content-Type': 'text/html'}); 
