@@ -158,12 +158,13 @@ app.post('/hookcatch', function (req, res) {
     var body = '';
 //    req.headers['Content-Type'] = 'text/plain';
     req.on('data', function(chunk) {
-	body += chunk;
+	    body += chunk;
     });
     for(key in req.headers) {
         console.log(key + ': ' + req.headers[key]);
     };
-    console.log(req.body);
+//    console.log(req.body);
+    console.log(body);
     var wholeBody = JSON.parse(req.body);
     console.log(req.query);
     if(wholeBody['event'] === 'create_feature') {
