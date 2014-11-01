@@ -30,7 +30,7 @@ function getTWPMKey() {
         };
         return data;
     });
-    return key;
+    return key.replace(/^\s+|\s+$/g, '');
 };
 
 function createTWPMTask (reqObject) {
