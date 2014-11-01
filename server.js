@@ -71,13 +71,19 @@ function createTWPMTask (reqObject) {
         /*'Content-Length': params.length*/
         }
     };
-    var httpReq = new XMLHttpRequest();
-    var url = 'http://'+options.host+options.path;
-    httpReq.open(options.method, url, false);
-    for(key in options.headers) {
-        httpReq.setRequestHeader(key, options.headers[key]);
-    };
-    httpReq.send(params);
+    var httpReq = http.request(options, function(res) {
+        console.log('STATUS: ' + res.statusCode);
+        console.log('HEADERS: ' + JSON.stringify(res.headers));
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            console.log('BODY: ' + chunk);
+        });
+    });
+    req.on('error', function(e) {
+        console.log('request error: ' + e.message);
+    });
+    req.write(params);
+    req.end();
 };
 
 app.get('/testfile', function (req, res) {
