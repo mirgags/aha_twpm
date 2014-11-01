@@ -181,7 +181,7 @@ app.post('/hookcatch', function (req, res) {
         for(key in req.query) {
             console.log(key + ': ' + req.query[key]);
         };
-        var parameters, temp, queries;
+        var parameters = {}, temp, queries;
         queries = wholeBody.split('&');
         console.log('queries length: ' + queries.length);
         for(i=0;i<queries.length;i++) {
