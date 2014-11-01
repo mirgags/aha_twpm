@@ -168,13 +168,13 @@ app.post('/hookcatch', function (req, res) {
     var wholeBody = JSON.parse(req.body);
     console.log(wholeBody);
     console.log(req.query);
-    if(req.query['q'] === 'aha']) {
+    if(req.query['q'] === 'aha') {
         if(wholeBody['event'] === 'create_feature') {
             console.log('shold create task here');
             console.log('feature: ' + wholeBody.feature.name);
         };
     };
-    if(req.query['q'] === 'twpm']) {
+    if(req.query['q'] === 'twpm') {
         console.log('should update aha feature here');
     };
     req.on('end', function() {
