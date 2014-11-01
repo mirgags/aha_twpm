@@ -163,8 +163,8 @@ app.post('/hookcatch', function (req, res) {
     for(key in req.headers) {
         console.log(key + ': ' + req.headers[key]);
     };
-    console.log('body: \n' + req.body);
-    var wholeBody = JSON.parse(req.body);
+    console.log('body: \n' + body);
+    var wholeBody = JSON.parse(body);
     console.log(wholeBody);
     console.log(req.query);
     if(wholeBody['event'] === 'create_feature') {
