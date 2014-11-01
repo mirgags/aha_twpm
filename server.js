@@ -40,14 +40,22 @@ function createTWPMTask (reqObject) {
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
     var params = JSON.stringify({'todo-item': {
-      	'content': reqObject.feature.name,
-        'description': reqObject.feature.description.body,
+      	'content': reqObject.name,
+        'description': reqObject.body,
+        'responsible-party-id': reqObject.assigned_to_id,
+        'start-date': reqObject.start_date,
+        'due-date': reqObject.due_date,
+        'estimated-minutes': reqObject.time,
+        'creator-id': reqObject.creator_id,
+        'responsible-party-ids': reqObject.other_assigned_ids
+/*
         'responsible-party-id': '86917',
         'start-date': '20140909',
         'due-date': '20140910',
         'estimated-minutes': '99',
         'creator-id': '84418',
         'responsible-party-ids': '86917'
+*/
 	}});
     var options = {
 	host: 'clients.pint.com',
@@ -58,43 +66,33 @@ function createTWPMTask (reqObject) {
 	headers: {
 	    'Accept': 'application/json',
 	    'Content-Type': 'application/json',
-        'User-Agent': 'pint_integration_middleware1.0',
-	    'Authorization': 'Basic ' + authStr,
-        'Content-Length': params.length
+        'User-Agent': 'pint_integration',
+	    'Authorization': 'Basic ' + authStr
+        /*'Content-Length': params.length*/
         }
     };
-    var httpReq = http.request(options, function (response) {
-    	var str = '';
-    	response.on('data', function(chunk) {
-//    	response.on('data', function(data) {
-//            str += data;
-    	    str += chunk;
-    	});
-    	response.on('end', function () {
-            var responseJSON = JSON.parse(str);
-            res.writeHead(200,{'Content-Type': 'text/html'}); 
-            res.end('<!DOCTYPE html><head></head><body>'+str+'</body>');
-    	});
-        response.on('error', function(e) {
-            console.log('ERROR: ' + e.message);
-        });
-    });
-    httpReq.write(params);
-    httpReq.end();
-    console.log('response: ' + JSON.stringify(responseJSON));
+    var httpReq = new XMLHttpRequest();
+    var url = 'http://'+options.host+options.path;
+    httpReq.open(options.method, url, false);
+    for(key in options.headers) {
+        httpReq.setRequestHeader(key, options.headers[key]);
+    };
+    httpReq.send(params);
 };
 
 app.get('/testfile', function (req, res) {
-    createTWPMTask(req);
-/*    var key = fs.readFileSync('./teamwork_key.txt', 'utf-8', function (err, data) {
-        if (err) {
-            return console.log(err);
-        };
-        return data;
-    });
-    console.log(key);
-    res.end(key);
-*/
+        var params = {'todo-item': {
+      	'name': 'New Test Task',
+        'body': 'This is the test description',
+        'assigned_to_id': '86917',
+        'start_date': '20140909',
+        'due_date': '20140910',
+        'time': '99',
+        'creator_id': '84418',
+        'other_assigned_ids': '86917'
+    }};
+    createTWPMTask(params);
+    req.end("<!DOCTYPE html><head></head><body>Req Sent</body></html>");
 });
 
 app.get('/test', function (req, res) {
