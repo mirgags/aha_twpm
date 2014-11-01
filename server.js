@@ -30,6 +30,7 @@ function getTWPMKey() {
         };
         return data;
     });
+    return key;
 };
 
 function createTWPMTask (reqObject) {
