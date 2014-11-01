@@ -13,7 +13,8 @@ var urlencodedParser = bodyParser.urlencoded({extended: false});
 var textParser = bodyParser.text({ type: 'application/x-www-form-urlencoded'});
 //app.use('/aha', bodyParser.text());
 //app.use('/twpm', bodyParser.json());
-//app.use(bodyParser.json({type: 'application/vnd.api+json'}));
+app.use(bodyParser.text({ type: 'application/x-www-form-urlencoded'}));
+app.use(bodyParser.json({type: 'application/vnd.api+json'}));
 
 
 app.use(function (req, res, next) {
