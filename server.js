@@ -168,9 +168,14 @@ app.post('/hookcatch', function (req, res) {
     var wholeBody = JSON.parse(req.body);
     console.log(wholeBody);
     console.log(req.query);
-    if(wholeBody['event'] === 'create_feature') {
-        console.log('shold create task here');
-        console.log('feature: ' + wholeBody.feature.name);
+    if(req.query['q'] === 'aha']) {
+        if(wholeBody['event'] === 'create_feature') {
+            console.log('shold create task here');
+            console.log('feature: ' + wholeBody.feature.name);
+        };
+    };
+    if(req.query['q'] === 'twpm']) {
+        console.log('should update aha feature here');
     };
     req.on('end', function() {
         res.writeHead(200,{'Content-Type': 'text/html'}); 
@@ -179,20 +184,7 @@ app.post('/hookcatch', function (req, res) {
     req.on('error', function(e) {
         console.log('ERROR: ' + e.message);
     });
-//    res.end();
-    res.writeHead(200,{'Content-Type': 'text/html'}); 
-    res.end('<!DOCTYPE html><head></head><body>Hook caught</body>');
-});
-
-app.post('/twpm', jsonParser, function (req, res) { 
-    console.log('*****');
-    console.log('initial url: ' + req.url);
-    console.log(req.method);
-    console.log(req.headers);
-    var bodyHash = req.body;
-    console.log(bodyHash);
-    res.writeHead(200,{'Content-Type': 'text/html'}); 
-    res.end('<!DOCTYPE html><head></head><body>Hook caught</body>');
+    res.end();
 });
 
 app.listen(8002); 
