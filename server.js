@@ -177,9 +177,9 @@ app.post('/hookcatch', function (req, res) {
     req.on('error', function(e) {
         console.log('ERROR: ' + e.message);
     });
-    res.end();
-//    res.writeHead(200,{'Content-Type': 'text/html'}); 
-//    res.end('<!DOCTYPE html><head></head><body>Hook caught</body>');
+//    res.end();
+    res.writeHead(200,{'Content-Type': 'text/html'}); 
+    res.end('<!DOCTYPE html><head></head><body>Hook caught</body>');
 });
 
 app.post('/twpm', jsonParser, function (req, res) { 
