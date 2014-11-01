@@ -177,7 +177,7 @@ app.post('/hookcatch', function (req, res) {
     };
     if(req.query['q'] === 'twpm') {
         var wholeBody = decodeURI(req.body);
-        console.log(wholeBody);
+        console.log(typeof wholeBody);
         for(key in req.query) {
             console.log(key + ': ' + req.query[key]);
         };
