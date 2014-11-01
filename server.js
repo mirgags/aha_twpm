@@ -79,11 +79,11 @@ function createTWPMTask (reqObject) {
             console.log('BODY: ' + chunk);
         });
     });
-    req.on('error', function(e) {
+    httpReq.on('error', function(e) {
         console.log('request error: ' + e.message);
     });
-    req.write(params);
-    req.end();
+    httpReq.write(params);
+    httpReq.end();
 };
 
 app.get('/testfile', function (req, res) {
