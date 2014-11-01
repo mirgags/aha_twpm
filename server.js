@@ -178,6 +178,12 @@ app.post('/hookcatch', function (req, res) {
     if(req.query['q'] === 'twpm') {
         var wholeBody = decodeURI(req.body);
         console.log(wholeBody);
+        var parameters, temp, queries = req.query.split('&');
+        for(i=0;i<queries.length;i++) {
+            temp = queries[i].split('=');
+            parameters[temp[0]] = temp[1];
+        };
+        console.log(JSON.stringify(parameters));
         console.log('should update aha feature here');
     };
     req.on('end', function() {
