@@ -183,6 +183,7 @@ app.post('/hookcatch', function (req, res) {
         };
         var parameters, temp, queries;
         queries = wholeBody.split('&');
+        console.log('queries length: ' + queries.length);
         for(i=0;i<queries.length;i++) {
             temp = queries[i].split('=');
             parameters[temp[0]] = temp[1];
