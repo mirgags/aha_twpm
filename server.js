@@ -80,6 +80,7 @@ function createTWPMTask (reqObject) {
             console.log('BODY: ' + chunk);
             body += chunk;
         });
+        res.end();
     });
     httpReq.on('error', function(e) {
         console.log('request error: ' + e.message);
