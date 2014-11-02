@@ -71,12 +71,12 @@ function createTWPMTask (reqObject) {
         /*'Content-Length': params.length*/
         }
     };
-    var httpReq = http.request(options, function(res) {
-        console.log('STATUS: ' + res.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(res.headers));
-        res.setEncoding('utf8');
+    var httpReq = http.request(options, function(response) {
+        console.log('STATUS: ' + response.statusCode);
+        console.log('HEADERS: ' + JSON.stringify(response.headers));
+        response.setEncoding('utf8');
         var body = '';
-        res.on('data', function (chunk) {
+        response.on('data', function (chunk) {
             console.log('BODY: ' + chunk);
             body += chunk;
         });
