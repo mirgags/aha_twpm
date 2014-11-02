@@ -41,14 +41,14 @@ function createTWPMTask (reqObject) {
     console.log('encrypted: ' + authStr);
     console.log(JSON.stringify(reqObject));
     var parameters = {'todo-item': {
-      	'content': reqObject.todo-item.name,
-        'description': reqObject.todo-item.body,
-        'responsible-party-id': reqObject.todo-item.assigned_to_id,
-        'start-date': reqObject.todo-item.start_date,
-        'due-date': reqObject.todo-item.due_date,
-        'estimated-minutes': reqObject.todo-item.time,
-        'creator-id': reqObject.todo-item.creator_id,
-        'responsible-party-ids': reqObject.todo-item.other_assigned_ids
+      	'content': reqObject['todo-item']['name'],
+        'description': reqObject['todo-item']['body'],
+        'responsible-party-id': reqObject['todo-item']['assigned_to_id'],
+        'start-date': reqObject['todo-item']['start_date'],
+        'due-date': reqObject['todo-item']['due_date'],
+        'estimated-minutes': reqObject['todo-item']['time'],
+        'creator-id': reqObject['todo-item']['creator_id'],
+        'responsible-party-ids': reqObject['todo-item']['other_assigned_ids']
 /*
         'responsible-party-id': '86917',
         'start-date': '20140909',
