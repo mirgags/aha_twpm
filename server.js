@@ -36,13 +36,8 @@ function getTWPMKey() {
 function createTWPMTask (reqObject) {
     var passKey = getTWPMKey();
     console.log(passKey);
-/*
     var buff = new Buffer(passKey + ':X');
     var authStr = buff.toString('base64');
-    console.log('encrypted: ' + authStr);
-    console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
-*/
-    var authStr = Base64.encode(passKey + ':X');
     console.log('encrypted: ' + authStr);
     console.log('decrypted: ' + Base64.decode(authStr));
     var params = JSON.stringify({'todo-item': {
@@ -84,6 +79,7 @@ function createTWPMTask (reqObject) {
         res.on('data', function (chunk) {
             console.log('BODY: ' + chunk);
         });
+        res.end();
     });
     httpReq.on('error', function(e) {
         console.log('request error: ' + e.message);
