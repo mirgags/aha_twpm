@@ -80,9 +80,6 @@ function createTWPMTask (reqObject) {
             console.log('BODY: ' + chunk);
             body += chunk;
         });
-        response.on('end', function () {
-            response.end();
-        });
     });
     httpReq.on('error', function(e) {
         console.log('request error: ' + e.message);
@@ -103,7 +100,7 @@ app.get('/testfile', function (req, res) {
         'other_assigned_ids': '86917'
     }};
     createTWPMTask(params);
-    req.end("<!DOCTYPE html><head></head><body>Req Sent</body></html>");
+    res.end("<!DOCTYPE html><head></head><body>Req Sent</body></html>");
 });
 
 app.get('/test', function (req, res) {
