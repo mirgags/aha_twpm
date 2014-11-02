@@ -40,7 +40,7 @@ function createTWPMTask (reqObject) {
     var authStr = buff.toString('base64');
     console.log('encrypted: ' + authStr);
     console.log(JSON.stringify(reqObject));
-    var parameters = JSON.stringify({'todo-item': {
+    var parameters = {'todo-item': {
       	'content': reqObject.todo-item.name,
         'description': reqObject.todo-item.body,
         'responsible-party-id': reqObject.todo-item.assigned_to_id,
@@ -57,8 +57,8 @@ function createTWPMTask (reqObject) {
         'creator-id': '84418',
         'responsible-party-ids': '86917'
 */
-	}});
-    console.log(parameters);
+	}};
+    console.log(JSON.stringify(parameters));
     var options = {
 	host: 'clients.pint.com',
 //	host: 'requestb.in',
@@ -86,7 +86,7 @@ function createTWPMTask (reqObject) {
     httpReq.on('error', function(e) {
         console.log('request error: ' + e.message);
     });
-    httpReq.write(parameters);
+    httpReq.write(JSON.stringify(parameters));
     httpReq.end();
 };
 
