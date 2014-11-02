@@ -42,9 +42,9 @@ function createTWPMTask (reqObject) {
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
 */
-    var authStr = btoa(passKey + ':X');
+    var authStr = Base64.encode(passKey + ':X');
     console.log('encrypted: ' + authStr);
-    console.log('decrypted: ' + atob(authStr));
+    console.log('decrypted: ' + Base64.decode(authStr));
     var params = JSON.stringify({'todo-item': {
       	'content': reqObject.name,
         'description': reqObject.body,
