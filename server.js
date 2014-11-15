@@ -42,6 +42,7 @@ function createTWPMTask (reqObject, options) {
     var authStr = buff.toString('base64');
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
+    options.headers['Authorization'] = 'Basic' + authStr;
     var params = JSON.stringify(reqObject);
     var httpReq = http.request(options, function (response) {
     	var str = '';
@@ -85,8 +86,8 @@ app.get('/test', function (req, res) {
     	    'Accept': 'application/json',
     	    'Content-Type': 'application/json',
             'User-Agent': 'pint_integration_middleware1.0',
-    	    'Authorization': 'Basic ' + authStr,
-            'Content-Length': params.length
+    	    'Authorization': ,
+            'Content-Length': taskObject.length
         }
     };
     var responseStr = createTWPMTask(taskObject, taskOptions);
