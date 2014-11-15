@@ -43,7 +43,7 @@ function createTWPMTask (reqObject, options) {
     var authStr = buff.toString('base64');
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
-    options.headers['Authorization'] = 'Basic' + authStr;
+    options['headers']['Authorization'] = 'Basic' + authStr;
     var params = JSON.stringify(reqObject);
     var httpReq = http.request(options, function (response) {
     	var str = '';
