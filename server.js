@@ -38,7 +38,8 @@ function createTWPMTask (reqObject, options) {
     	username: getTWPMKey(),
 	    password: 'X'
     });
-    var buff = new Buffer(getTWPMKey() + ':X');
+    var twpmKey = getTWPMKey();
+    var buff = new Buffer(twpmKey + ':X');
     var authStr = buff.toString('base64');
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
@@ -64,7 +65,6 @@ function createTWPMTask (reqObject, options) {
 
 app.get('/test', function (req, res) {
     console.log(getTWPMKey());
-    console.log('inbound header: ' + req.header['user-agent']);
     var taskObject = {'todo-item': {
       	'content': 'test task',
         'description': 'test description',
@@ -86,7 +86,7 @@ app.get('/test', function (req, res) {
     	    'Accept': 'application/json',
     	    'Content-Type': 'application/json',
             'User-Agent': 'pint_integration_middleware1.0',
-    	    'Authorization': ,
+    	    'Authorization': '',
             'Content-Length': taskObject.length
         }
     };
