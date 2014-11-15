@@ -87,9 +87,8 @@ app.get('/test', function (req, res) {
             'User-Agent': 'pint_integration_middleware1.0',
     	    'Authorization': 'Basic ' + authStr,
             'Content-Length': params.length
-            }
-        };
-	};
+        }
+    };
     var responseStr = createTWPMTask(taskObject, taskOptions);
     res.writeHead(200,{'Content-Type': 'text/html'}); 
     res.end('<!DOCTYPE html><head></head><body>'+responseStr+'</body>');
