@@ -33,27 +33,31 @@ function getTWPMKey() {
     return key.replace(/^\s+|\s+$/g, '');
 };
 
-function createTWPMTask (reqObject, options) {
-    var data = qs.stringify({
-    	username: getTWPMKey(),
-	    password: 'X'
-    });
+function createTWPMTask (reqObject, reqOptions) {
+    var options = reqOptions;
+    console.log(JSON.stringify(options));
     var twpmKey = getTWPMKey();
     var buff = new Buffer(twpmKey + ':X');
     var authStr = buff.toString('base64');
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
-    options['headers']['Authorization'] = 'Basic' + authStr;
+    options['headers']['Authorization'] = 'Basic ' + authStr;
     var params = JSON.stringify(reqObject);
+    options['headers']['Content-Length'] = params.length;
+    console.log(JSON.stringify(options));
+    console.log('should be params: ' + params);
     var httpReq = http.request(options, function (response) {
     	var str = '';
     	response.on('data', function(chunk) {
 //    	response.on('data', function(data) {
 //            str += data;
     	    str += chunk;
+            console.log('data received: ');
     	});
     	response.on('end', function () {
-            return str;
+            console.log('hit request end');
+            console.log(response.headers);
+            console.log(response.statusCode);
         });
         response.on('error', function(e) {
             console.log('ERROR: ' + e.message);
@@ -64,7 +68,6 @@ function createTWPMTask (reqObject, options) {
 };
 
 app.get('/test', function (req, res) {
-    console.log(getTWPMKey());
     var taskObject = {'todo-item': {
       	'content': 'test task',
         'description': 'test description',
@@ -78,21 +81,24 @@ app.get('/test', function (req, res) {
     };
     var taskOptions = {
     	host: 'clients.pint.com',
-    //	host: 'requestb.in',
+//    	host: 'requestb.in',
+        json: true,
     	path: '/tasklists/562384/tasks.json',
-    //	path: '/qooc93qo',
+//    	path: '/116rwi21',
     	method: 'POST',
+        followRedirect: true,
     	headers: {
     	    'Accept': 'application/json',
     	    'Content-Type': 'application/json',
-            'User-Agent': 'pint_integration_middleware1.0',
-    	    'Authorization': '',
-            'Content-Length': taskObject.length
+            'Content-Length': '',
+    	    'Authorization': ''
         }
     };
-    var responseStr = createTWPMTask(taskObject, taskOptions);
+//    var responseStr = createTWPMTask(taskObject, taskOptions);
+//    console.log('undefined string?: ' + responseStr);
     res.writeHead(200,{'Content-Type': 'text/html'}); 
-    res.end('<!DOCTYPE html><head></head><body>'+responseStr+'</body>');
+    res.end('<!DOCTYPE html><head></head><body>'+'nothing here'+'</body>');
+    createTWPMTask(taskObject, taskOptions);
 //    console.log('response: ' + responseJSON);
 });
 
