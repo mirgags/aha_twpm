@@ -33,7 +33,7 @@ function getTWPMKey() {
     return key.replace(/^\s+|\s+$/g, '');
 };
 
-function createTWPMTask (reqObject, reqOptions) {
+function createTWPMTask (reqObject, reqOptions, theResponse) {
     var options = reqOptions;
     console.log(JSON.stringify(options));
     var twpmKey = getTWPMKey();
@@ -56,8 +56,12 @@ function createTWPMTask (reqObject, reqOptions) {
     	});
     	response.on('end', function () {
             console.log('hit request end');
-            console.log(response.headers);
+            console.log(str);
             console.log(response.statusCode);
+            theResponse.write('<!DOCTYPE html><head></head><body>Hey');
+            theResponse.write(str);
+            theResponse.write('</body></html>');
+            theResponse.end();
         });
         response.on('error', function(e) {
             console.log('ERROR: ' + e.message);
@@ -94,12 +98,8 @@ app.get('/test', function (req, res) {
     	    'Authorization': ''
         }
     };
-//    var responseStr = createTWPMTask(taskObject, taskOptions);
-//    console.log('undefined string?: ' + responseStr);
-    res.writeHead(200,{'Content-Type': 'text/html'}); 
-    res.end('<!DOCTYPE html><head></head><body>'+'nothing here'+'</body>');
-    createTWPMTask(taskObject, taskOptions);
-//    console.log('response: ' + responseJSON);
+    res.writeHead(200,{'Content-Type': 'text/html'});
+    createTWPMTask(taskObject, taskOptions, res);
 });
 
 app.post('/hookcatch', function (req, res) { 
