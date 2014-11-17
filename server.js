@@ -121,6 +121,32 @@ app.post('/hookcatch', function (req, res) {
         console.log(wholeBody);
         if(wholeBody['event'] === 'create_feature') {
             console.log('shold create task here');
+            var taskObject = {'todo-item': {
+              	'content': wholeBody.feature.name,
+                'description': wholeBody.feature.description.body,
+                'responsible-party-id': '86917',
+                'start-date': wholeBody.feature.release.start_date,
+                'due-date': wholeBody.feature.release.release_date,
+    //            'estimated-minutes': '99',
+                'creator-id': '84418',
+                'responsible-party-ids': '86917'
+                }
+            };
+            var taskOptions = {
+            	host: 'clients.pint.com',
+                json: true,
+            	path: '/tasklists/562384/tasks.json',
+            	method: 'POST',
+                followRedirect: true,
+            	headers: {
+            	    'Accept': 'application/json',
+            	    'Content-Type': 'application/json',
+                    'Content-Length': '',
+            	    'Authorization': ''
+                }
+            };
+            res.writeHead(200,{'Content-Type': 'text/html'});
+            createTWPMTask (taskObject, taskOptions, res);
             console.log('feature: ' + wholeBody.feature.name);
         };
     };
