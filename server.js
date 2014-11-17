@@ -126,9 +126,9 @@ app.post('/hookcatch', function (req, res) {
                 'description': wholeBody.feature.description.body,
                 'responsible-party-id': '86917',
                 'start-date': 
-                  wholeBody.feature.release.start_date.replace('-', ''),
+                 wholeBody.feature.release.start_date.replace(/-/g, ''),
                 'due-date':
-                  wholeBody.feature.release.release_date.replace('-', ''),
+                 wholeBody.feature.release.release_date.replace(/-/g, ''),
     //            'estimated-minutes': '99',
                 'creator-id': '84418',
                 'responsible-party-ids': '86917'
