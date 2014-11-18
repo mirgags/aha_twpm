@@ -7,7 +7,11 @@ var express = require('express');
 var bodyParser = require('body-parser');
 
 var app = express();
-
+var db = mongoose.connect('mongodb://127.0.0.1:27017/aha_twpm');
+    mongoose.connection.once('connected', function () {
+        console.log("connected to aha_twpm database");
+    };
+};
 //app.use('/aha', bodyParser.urlencoded({extended: true}));
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({extended: false});
@@ -23,14 +27,6 @@ app.use(function (req, res, next) {
 //    console.log(req.headers);
     next();
 });
-
-function connectMongo () {
-    var db = mongoose.connect('mongodb://127.0.0.1:27017/aha_twpm');
-    mongoose.connection.once('connected', function () {
-        console.log("connected to aha_twpm database");
-    };
-    return db;
-};
 
 function getTWPMKey() {
     var key = fs.readFileSync('./teamwork_key.txt', 'utf-8', function (err, data) {
