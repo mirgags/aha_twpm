@@ -10,7 +10,7 @@ var app = express();
 var db = mongoose.connect('mongodb://127.0.0.1:27017/aha_twpm');
 mongoose.connection.once('connected', function () {
     console.log("connected to aha_twpm database");
-)};
+});
 //app.use('/aha', bodyParser.urlencoded({extended: true}));
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({extended: false});
