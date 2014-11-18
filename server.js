@@ -1,3 +1,4 @@
+var mongoose = require('mongoose');
 var fs = require('fs');
 var http = require('http');
 var url = require('url');
@@ -22,6 +23,14 @@ app.use(function (req, res, next) {
 //    console.log(req.headers);
     next();
 });
+
+function connectMongo () {
+    var db = mongoose.connect('mongodb://127.0.0.1:27017/aha_twpm');
+    mongoose.connection.once('connected', function () {
+        console.log("connected to aha_twpm database");
+    };
+    return db;
+};
 
 function getTWPMKey() {
     var key = fs.readFileSync('./teamwork_key.txt', 'utf-8', function (err, data) {
