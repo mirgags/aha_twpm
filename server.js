@@ -123,22 +123,33 @@ app.post('/hookcatch', function (req, res) {
     if(req.query['q'] === 'aha') {
         var wholeBody = JSON.parse(req.body);
         console.log(wholeBody);
-        if(wholeBody['event'] === 'create_feature') {
-            console.log('shold create task here');
-            var taskObject = {'todo-item': {
-              	'content': wholeBody.feature.name,
-                'description': wholeBody.feature.description.body,
+	res.writeHead(200,{'Content-Type': 'text/html'});
+	if(wholeBody['audit']['auditable_type'] === 'feature') {
+            if(wholeBody['audit']['audit_action'] === 'create') {
+                console.log('shold create task here');
+                var taskObject = {'todo-item': {
+              	'content': '',
+                'description': JSON.stringify(wholeBody),
                 'responsible-party-id': '86917',
+/*
                 'start-date': 
                  wholeBody.feature.release.start_date.replace(/-/g, ''),
                 'due-date':
                  wholeBody.feature.release.release_date.replace(/-/g, ''),
+*/
+                'start-date': '',
+                'due-date': '',
     //            'estimated-minutes': '99',
                 'creator-id': '84418',
                 'responsible-party-ids': '86917'
                 }
-            };
-            var taskOptions = {
+                };
+		for(i=0;i<wholeBody['audit']['changes'].length;i++) {
+		    if(wholeBody['audit']['changes'][i]['field_name']==='Name'){
+			taskObject['todo-item']['content'] = wholeBody['audit']['changes'][i]['value'];
+		    };
+		};
+                var taskOptions = {
             	host: 'clients.pint.com',
                 json: true,
             	path: '/tasklists/562384/tasks.json',
@@ -150,11 +161,14 @@ app.post('/hookcatch', function (req, res) {
                     'Content-Length': '',
             	    'Authorization': ''
                 }
-            };
-            res.writeHead(200,{'Content-Type': 'text/html'});
-            createTWPMTask (taskObject, taskOptions, res);
-            console.log('feature: ' + wholeBody.feature.name);
-        };
+                };
+                createTWPMTask (taskObject, taskOptions, res);
+                //console.log('feature: ' + wholeBody.feature.name);
+            }
+	}
+	else {
+	    res.end('Webhook received');
+	};
     };
     if(req.query['q'] === 'twpm') {
         var wholeBody = decodeURI(req.body);
@@ -182,6 +196,6 @@ app.post('/hookcatch', function (req, res) {
     res.end();
 });
 
-app.listen(8002); 
+app.listen(80); 
  
 console.log('You got the server running, fishbulb.');
