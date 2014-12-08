@@ -47,7 +47,7 @@ function getKey(service) {
     return key
 };
 
-function getAhaFeature (featureID, theResponse) {
+function getAhaFeature (featureID, theResponse, reqObject, reqOptions) {
     var ahaKey = getKey('aha');
     console.log(ahaKey);
     var buff = new Buffer(ahaKey);
@@ -76,10 +76,13 @@ function getAhaFeature (featureID, theResponse) {
             console.log('hit request end');
             console.log(str);
             console.log(response.statusCode);
-            theResponse.write('<!DOCTYPE html><head></head><body>');
+            /*theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
             theResponse.write('</body></html>');
-            theResponse.end();
+            theResponse.end();*/
+            var featureJSON = JSON.parse(str);
+            reqObject['todo-item']['description'] = featureJSON['feature']['description']['body'];
+            createTWPMTask (reqObject, reqOptions, theResponse);
         });
         response.on('error', function(e) {
             console.log('ERROR: ' + e.message);
@@ -178,7 +181,11 @@ app.post('/hookcatch', function (req, res) {
         res.writeHead(200,{'Content-Type': 'text/html'});
 	    if(wholeBody['audit']['auditable_type'] === 'feature') {
             if(wholeBody['audit']['audit_action'] === 'create') {
-                var theURL = wholeBody['auditable_url'];
+                for (i=0;i<wholeBody['audit']['changes'].length;i++) {
+                    if (wholeBody['audit']['changes'][i]['field_name'] === 'Reference num') {
+                        var featureValue = wholeBody['audit']['changes'][i]['value'];
+                    };
+                };
                 console.log('shold create task here');
                 var taskObject = {'todo-item': {
               	'content': '',
@@ -213,9 +220,10 @@ app.post('/hookcatch', function (req, res) {
             	    'Content-Type': 'application/json',
                     'Content-Length': '',
             	    'Authorization': ''
-                }
+                    }
                 };
-                createTWPMTask (taskObject, taskOptions, res);
+                getAhaFeature (featureValue, res, taskObject, taskOptions)
+                //createTWPMTask (taskObject, taskOptions, res);
                 //console.log('feature: ' + wholeBody.feature.name);
             }
 	}
