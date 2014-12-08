@@ -1,16 +1,20 @@
-var mongoose = require('mongoose');
 var fs = require('fs');
 var http = require('http');
+var https = require('https');
 var url = require('url');
 var qs = require('querystring');
 var express = require('express');
 var bodyParser = require('body-parser');
 
 var app = express();
+// Uncomment to implement Mongoose
+/*
+var mongoose = require('mongoose');
 var db = mongoose.connect('mongodb://127.0.0.1:27017/aha_twpm');
 mongoose.connection.once('connected', function () {
     console.log("connected to aha_twpm database");
 });
+*/
 //app.use('/aha', bodyParser.urlencoded({extended: true}));
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({extended: false});
@@ -27,20 +31,67 @@ app.use(function (req, res, next) {
     next();
 });
 
-function getTWPMKey() {
-    var key = fs.readFileSync('./teamwork_key.txt', 'utf-8', function (err, data) {
+function getKey(service) {
+    var theData = fs.readFileSync('./config.json', 'utf-8', function (err, data) {
         if (err) {
             return console.log(err);
         };
         return data;
     });
-    return key.replace(/^\s+|\s+$/g, '');
+    theData = theData.replace(/^\s+|\s+$/g, '');
+    console.log(theData);
+    var theJSON = JSON.parse(theData);
+    console.log(theJSON);
+    var key = theJSON[service];
+    key = key.replace(/^\s+|\s+$/g, '');
+    return key
 };
+
+function getAhaFeature (featureID, theResponse) {
+    var ahaKey = getKey('aha');
+    console.log(ahaKey);
+    var buff = new Buffer(ahaKey);
+    var authStr = buff.toString('base64');
+    console.log(authStr);
+    var options = {
+        host: 'websystem3.aha.io',
+        path: '/api/v1/features/' + featureID + '.json',
+        port: 443,
+        method: 'GET',
+        headers: {
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+            'Content-Length': 0,
+            'Authorization': 'Basic ' + authStr,
+            'User-Agent': 'Test Integration Script (mmiraglia@pint.com)'
+        }
+    };
+    var httpReq = https.request(options, function (response) {
+        var str = '';
+        response.on('data', function(chunk) {
+            str += chunk;
+            console.log('data received: ');
+        });
+        response.on('end', function () {
+            console.log('hit request end');
+            console.log(str);
+            console.log(response.statusCode);
+            theResponse.write('<!DOCTYPE html><head></head><body>');
+            theResponse.write(str);
+            theResponse.write('</body></html>');
+            theResponse.end();
+        });
+        response.on('error', function(e) {
+            console.log('ERROR: ' + e.message);
+        });
+    });
+    httpReq.end();
+}
 
 function createTWPMTask (reqObject, reqOptions, theResponse) {
     var options = reqOptions;
     console.log(JSON.stringify(options));
-    var twpmKey = getTWPMKey();
+    var twpmKey = getKey('twpm');
     var buff = new Buffer(twpmKey + ':X');
     var authStr = buff.toString('base64');
     console.log('encrypted: ' + authStr);
@@ -62,7 +113,7 @@ function createTWPMTask (reqObject, reqOptions, theResponse) {
             console.log('hit request end');
             console.log(str);
             console.log(response.statusCode);
-            theResponse.write('<!DOCTYPE html><head></head><body>Hey');
+            theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
             theResponse.write('</body></html>');
             theResponse.end();
@@ -76,7 +127,7 @@ function createTWPMTask (reqObject, reqOptions, theResponse) {
 };
 
 app.get('/test', function (req, res) {
-    var taskObject = {'todo-item': {
+    /*var taskObject = {'todo-item': {
       	'content': 'test task',
         'description': 'test description',
         'responsible-party-id': '86917',
@@ -101,9 +152,10 @@ app.get('/test', function (req, res) {
             'Content-Length': '',
     	    'Authorization': ''
         }
-    };
+    };*/
     res.writeHead(200,{'Content-Type': 'text/html'});
-    createTWPMTask(taskObject, taskOptions, res);
+    //createTWPMTask(taskObject, taskOptions, res);
+    getAhaFeature('WEB3-59', res);
 });
 
 app.post('/hookcatch', function (req, res) { 
@@ -123,9 +175,10 @@ app.post('/hookcatch', function (req, res) {
     if(req.query['q'] === 'aha') {
         var wholeBody = JSON.parse(req.body);
         console.log(wholeBody);
-	res.writeHead(200,{'Content-Type': 'text/html'});
-	if(wholeBody['audit']['auditable_type'] === 'feature') {
+        res.writeHead(200,{'Content-Type': 'text/html'});
+	    if(wholeBody['audit']['auditable_type'] === 'feature') {
             if(wholeBody['audit']['audit_action'] === 'create') {
+                var theURL = wholeBody['auditable_url'];
                 console.log('shold create task here');
                 var taskObject = {'todo-item': {
               	'content': '',
@@ -195,7 +248,7 @@ app.post('/hookcatch', function (req, res) {
     });
     res.end();
 });
-
-app.listen(80); 
+// Implement per your environment
+app.listen(8002); 
  
 console.log('You got the server running, fishbulb.');
