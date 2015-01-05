@@ -99,13 +99,14 @@ function testSlack (theResponse) {
         text: 'Test from node server',
         username: 'TestBot',
         parse: 'full',
-        attachments: attachJson,
+        /*attachments: attachJson,*/
         unfurl_links: true,
         unfurl_media: false
     };
     var reqOptions = {
         host: 'slack.com',
         json: true,
+        port: 443,
         path: '/api/chat.postMessage',
         method: 'POST',
         followRedirect: true,
@@ -115,7 +116,7 @@ function testSlack (theResponse) {
             'Content-Length': ''
         }
     };
-    response = createSlackPost(reqObject,reqOptions, theResponse);
+    createSlackPost(reqObject,reqOptions, theResponse);
 };
 
 function createSlackPost (reqObject, reqOptions, theResponse){
@@ -123,6 +124,7 @@ function createSlackPost (reqObject, reqOptions, theResponse){
     var requestObject = reqObject;
     requestObject['token'] = getKey('slack');
     var params = JSON.stringify(reqObject);
+    console.log(JSON.stringify(reqObject));
     options['headers']['Content-Length'] = params.length;
     var httpReq = http.request(options, function (response) {
         var str = '';
