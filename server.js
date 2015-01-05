@@ -91,6 +91,41 @@ function getAhaFeature (featureID, theResponse, reqObject, reqOptions) {
     httpReq.end();
 }
 
+function testSlack (theResponse) {
+    var attachJson = JSON.parse('[{"pretext"; "pre-hello","text":"text-world"}]');
+    var reqObject = {
+        token: '',
+        channel: 'C039EEZEW',
+        text: 'Test from node server',
+        username: 'TestBot',
+        parse: 'full',
+        attachments: attachJson,
+        unfurl_links: true,
+        unfurl_media: false
+    };
+    var reqOptions = {
+        host: 'slack.com',
+        json: true,
+        path: '/api/chat.postMessage',
+        method: 'POST',
+        followRedirect: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Content-Length': ''
+        }
+    };
+    response = createSlackPost(reqObject,reqOptions, theResponse);
+};
+
+function createSlackPost (reqObject, reqOptions, theResponse){
+    var options = reqOptions;
+    var requestObject = reqObject;
+    requestObject['token'] = getKey('slack');
+    var params = JSON.stringify(reqObject);
+    options['headers']['Content-Length'] = params.length;
+};
+
 function createTWPMTask (reqObject, reqOptions, theResponse) {
     var options = reqOptions;
     console.log(JSON.stringify(options));
@@ -247,6 +282,27 @@ app.post('/hookcatch', function (req, res) {
         console.log(JSON.stringify(parameters));
         console.log('should update aha feature here');
     };
+
+        if(req.query['q'] === 'slack') {
+            testSlack(res);
+        /*
+        var wholeBody = decodeURI(req.body);
+        console.log(typeof wholeBody);
+        for(key in req.query) {
+            console.log(key + ': ' + req.query[key]);
+        };
+        var parameters = {}, temp, queries;
+        queries = wholeBody.split('&');
+        console.log('queries length: ' + queries.length);
+        for(i=0;i<queries.length;i++) {
+            temp = queries[i].split('=');
+            parameters[temp[0]] = temp[1];
+        };
+        console.log(JSON.stringify(parameters));
+        console.log('should update twpm feature here');
+        */
+    };
+
     req.on('end', function() {
         res.writeHead(200,{'Content-Type': 'text/html'}); 
         res.end('<!DOCTYPE html><head></head><body>'+body+'</body>');
