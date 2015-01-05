@@ -92,7 +92,7 @@ function getAhaFeature (featureID, theResponse, reqObject, reqOptions) {
 }
 
 function testSlack (theResponse) {
-    var attachJson = JSON.parse('[{"pretext"; "pre-hello","text":"text-world"}]');
+    var attachJson = JSON.parse('[{"pretext": "pre-hello","text":"text-world"}]');
     var reqObject = {
         token: '',
         channel: 'C039EEZEW',
