@@ -165,6 +165,7 @@ function createTWPMTask (reqObject, reqOptions, theResponse) {
 };
 
 app.get('/test', function (req, res) {
+    testSlack(res);
     /*var taskObject = {'todo-item': {
       	'content': 'test task',
         'description': 'test description',
@@ -190,10 +191,11 @@ app.get('/test', function (req, res) {
             'Content-Length': '',
     	    'Authorization': ''
         }
-    };*/
+    };
     res.writeHead(200,{'Content-Type': 'text/html'});
     //createTWPMTask(taskObject, taskOptions, res);
     getAhaFeature('WEB3-59', res);
+    */
 });
 
 app.post('/hookcatch', function (req, res) { 
