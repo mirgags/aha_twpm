@@ -126,7 +126,9 @@ function createSlackPost (reqObject, reqOptions, theResponse){
     var params = JSON.stringify(reqObject);
     console.log(JSON.stringify(reqObject));
     options['headers']['Content-Length'] = params.length;
-    var httpReq = http.request(options, function (response) {
+    var httpReq = https.request(options, function (response) {
+        console.log("statusCode: ", response.statusCode);
+        console.log('headers: ', response.headers);
         var str = '';
         response.on('data', function(chunk) {
 //      response.on('data', function(data) {
