@@ -124,6 +124,29 @@ function createSlackPost (reqObject, reqOptions, theResponse){
     requestObject['token'] = getKey('slack');
     var params = JSON.stringify(reqObject);
     options['headers']['Content-Length'] = params.length;
+    var httpReq = http.request(options, function (response) {
+        var str = '';
+        response.on('data', function(chunk) {
+//      response.on('data', function(data) {
+//            str += data;
+            str += chunk;
+            console.log('data received: ');
+        });
+        response.on('end', function () {
+            console.log('hit request end');
+            console.log(str);
+            console.log(response.statusCode);
+            theResponse.write('<!DOCTYPE html><head></head><body>');
+            theResponse.write(str);
+            theResponse.write('</body></html>');
+            theResponse.end();
+        });
+        response.on('error', function(e) {
+            console.log('ERROR: ' + e.message);
+        });
+    });
+    httpReq.write(params);
+    httpReq.end();
 };
 
 function createTWPMTask (reqObject, reqOptions, theResponse) {
