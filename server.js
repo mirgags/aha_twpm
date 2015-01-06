@@ -124,7 +124,8 @@ function createSlackPost (reqObject, reqOptions, theResponse){
     var requestObject = reqObject;
     requestObject['token'] = getKey('slack');
     var params = JSON.stringify(requestObject);
-    console.log(JSON.stringify(requestObject));
+    console.log('params: ', JSON.stringify(params));
+    console.log('options: ', JSON.stringify(options));
     console.log(params.length);
     options['headers']['Content-Length'] = params.length;
     var httpReq = https.request(options, function (response) {
