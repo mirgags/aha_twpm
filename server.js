@@ -122,8 +122,12 @@ function testSlack (theResponse) {
 function createSlackPost (reqObject, reqOptions, theResponse){
     var options = reqOptions;
     var requestObject = reqObject;
-    requestObject['token'] = getKey('slack');
-    var params = JSON.stringify(requestObject);
+    //requestObject['token'] = getKey('slack');
+    //var params = JSON.stringify(requestObject);
+    var params = 'token=' + getKey('slack');
+    for(i in requestObject) {
+        params += '&' + i + '=' + requestObject[i]; 
+    }
     console.log('params: ', params);
     console.log(params.length);
     options['headers']['Content-Length'] = params.length;
