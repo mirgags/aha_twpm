@@ -113,7 +113,7 @@ function testSlack (theResponse) {
         headers: {
             /*'Accept': 'application/json',
             'Content-Type': 'application/json',*/
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': ''
         }
     };
@@ -339,6 +339,10 @@ app.post('/hookcatch', function (req, res) {
         console.log('should update twpm feature here');
         */
     };
+        if(req.query['q'] === 'test') {
+            var wholeBody = decodeURI(req.body);
+            console.log(wholeBody);
+        }
 
     req.on('end', function() {
         res.writeHead(200,{'Content-Type': 'text/html'}); 
