@@ -152,6 +152,7 @@ function createSlackPost (reqObject, reqOptions, theResponse){
         });
     });
     httpReq.write(params);
+    console.log('request body: ' + httpReq.body);
     httpReq.end();
 };
 
