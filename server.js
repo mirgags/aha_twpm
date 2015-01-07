@@ -111,8 +111,9 @@ function testSlack (theResponse) {
         method: 'POST',
         followRedirect: true,
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            /*'Accept': 'application/json',
+            'Content-Type': 'application/json',*/
+            'Content-Type': 'application/x-www-form-urlencoded'
             'Content-Length': ''
         }
     };
