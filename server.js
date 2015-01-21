@@ -381,8 +381,8 @@ app.post('/hookcatch', function (req, res) {
         console.log('should update aha feature here');
     };
 
-        if(req.query['q'] === 'slack') {
-            testSlack(res);
+    if(req.query['q'] === 'slack') {
+        testSlack(res);
         /*
         var wholeBody = decodeURI(req.body);
         console.log(typeof wholeBody);
@@ -400,9 +400,9 @@ app.post('/hookcatch', function (req, res) {
         console.log('should update twpm feature here');
         */
     };
-        if(req.query['q'] === 'test') {
-            getTwpmTask(3317039, res);
-        }
+    if(req.query['q'] === 'test') {
+        getTwpmTask(3317039, res);
+    }
 
     req.on('end', function() {
         res.writeHead(200,{'Content-Type': 'text/html'}); 
