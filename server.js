@@ -413,6 +413,12 @@ app.post('/hookcatch', function (req, res) {
     });
     res.end();
 });
+
+app.get('/test', function (req, res) {
+    if(req.query['q'] === 'twpm') {
+        getTwpmTask(3317039, res);
+    };
+});
 // Implement per your environment
 app.listen(8002); 
  
