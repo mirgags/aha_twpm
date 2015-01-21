@@ -31,6 +31,37 @@ app.use(function (req, res, next) {
     next();
 });
 
+function getMap(featureID, service) {
+    var theData = fs.readFileSync('./map.json', 'utf-8', function (err, data) {
+        if (err) {
+            return console.log(err);
+        };
+        return data;
+    });
+    theData = theData.replace(/^\s+|\s+$/g, '');
+    console.log(theData);
+    var theJSON = JSON.parse(theData);
+    console.log(theJSON);
+    var key = theJSON[service][featureID];
+    key = key.replace(/^\s+|\s+$/g, '');
+    return key
+}
+
+function addMap(featureID, service) {
+    var theData = fs.readFileSync('./map.json', 'utf-8', function (err, data) {
+        if (err) {
+            return console.log(err);
+        };
+        return data;
+    });
+    theData = theData.replace(/^\s+|\s+$/g, '');
+    console.log(theData);
+    var theJSON = JSON.parse(theData);
+    console.log(theJSON);
+    theJSON[service] = featureID;
+    return theJSON[service]
+}
+
 function getKey(service) {
     var theData = fs.readFileSync('./config.json', 'utf-8', function (err, data) {
         if (err) {
@@ -47,6 +78,36 @@ function getKey(service) {
     return key
 };
 
+function getTwpmTask (taskID, theResponse) {
+    var twpmKey = getKey('twpm');
+    var buff = new Buffer(twpmKey + ':X');
+    var authStr = buff.toString('base64');
+    var options = {
+        host: 'clients.pint.com',
+        json: true,
+        path: '/tasks/3317039.json',
+        method: 'GET',
+        followRedirect: true
+    };
+    options['headers']['Authorization'] = 'Basic ' + authStr;
+    var httpReq = https.request(options, function (response) {
+        var str = '';
+        response.on('data', function(chunk) {
+            str += chunk;
+        });
+        response.on('end', function () {
+            theResponse.write('<!DOCTYPE html><head></head><body>');
+            theResponse.write(str);
+            theResponse.write('</body></html>');
+            theResponse.end();
+        });
+        response.on('error', function(e) {
+            console.log('ERROR: ' + e.message);
+        });
+    });
+    httpReq.end();
+}
+
 function getAhaFeature (featureID, theResponse, reqObject, reqOptions) {
     var ahaKey = getKey('aha');
     console.log(ahaKey);
@@ -54,7 +115,7 @@ function getAhaFeature (featureID, theResponse, reqObject, reqOptions) {
     var authStr = buff.toString('base64');
     console.log(authStr);
     var options = {
-        host: 'websystem3.aha.io',
+        host: 'secure.aha.io',
         path: '/api/v1/features/' + featureID + '.json',
         port: 443,
         method: 'GET',
@@ -340,8 +401,7 @@ app.post('/hookcatch', function (req, res) {
         */
     };
         if(req.query['q'] === 'test') {
-            var wholeBody = decodeURI(req.body);
-            console.log(wholeBody);
+            getTwpmTask(3317039, res);
         }
 
     req.on('end', function() {
