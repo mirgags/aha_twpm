@@ -95,7 +95,7 @@ function getTwpmTask (taskID, theResponse) {
         path: '/tasks/3317039.json',
         method: 'GET',
         followRedirect: true,
-        checkServerIdentity: undefined,
+        checkServerIdentity: tls.checkServerIdentity(),
         headers: {}
     };
     options['headers']['Authorization'] = 'Basic ' + authStr;
