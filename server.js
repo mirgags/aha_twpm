@@ -7,7 +7,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var tls = require('tls');
 tls.checkServerIdentity = function (host, cert) {
-    return true;
+    return undefined;
 };
 //var config = require('./config.json');
 
@@ -117,7 +117,7 @@ function getTwpmTask (taskID, theResponse) {
     httpReq.end();
 }
 
-function getAhaFeature (featureID, theResponse, reqObject, reqOptions) {
+function getAhaFeature (featureID, theResponse) {
     var ahaKey = getKey('aha');
     console.log(ahaKey);
     var buff = new Buffer(ahaKey);
@@ -142,6 +142,7 @@ function getAhaFeature (featureID, theResponse, reqObject, reqOptions) {
             str += chunk;
             console.log('data received: ');
         });
+        /*
         response.on('end', function () {
             console.log('hit request end');
             console.log(str);
@@ -149,10 +150,17 @@ function getAhaFeature (featureID, theResponse, reqObject, reqOptions) {
             /*theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
             theResponse.write('</body></html>');
-            theResponse.end();*/
+            theResponse.end();
             var featureJSON = JSON.parse(str);
             reqObject['todo-item']['description'] = featureJSON['feature']['description']['body'];
             createTWPMTask (reqObject, reqOptions, theResponse);
+        });
+        */
+        response.on('end', function () {
+            theResponse.write('<!DOCTYPE html><head></head><body>');
+            theResponse.write(str);
+            theResponse.write('</body></html>');
+            theResponse.end();
         });
         response.on('error', function(e) {
             console.log('ERROR: ' + e.message);
@@ -422,6 +430,9 @@ app.get('/test', function (req, res) {
         //createTWPMTask(taskObject, taskOptions, res);
         getAhaFeature('WEB3-59', res);
         */
+    };
+    if(req.query['q'] === 'aha') {
+        getAhaFeature(6106566842702943837, res);
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
