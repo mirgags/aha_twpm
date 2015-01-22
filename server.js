@@ -158,6 +158,7 @@ function getAhaFeature (featureID, theRequest, theResponse) {
         response.on('end', function () {
             //theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
+            createTWPMTask(562384, theRequest, theResponse)
             //theResponse.write('</body></html>');
             theResponse.end();
         });
@@ -165,7 +166,8 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             console.log('ERROR: ' + e.message);
         });
     });
-    httpReq.end(createTWPMTask(562384, str, theResponse));
+    var r = httpReq.end();
+    console.log(r);
     //return str;
 }
 
