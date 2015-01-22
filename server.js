@@ -90,7 +90,8 @@ function getTwpmTask (taskID, theResponse) {
         json: true,
         path: '/tasks/3317039.json',
         method: 'GET',
-        followRedirect: true
+        followRedirect: true,
+        headers = {}
     };
     options['headers']['Authorization'] = 'Basic ' + authStr;
     var httpReq = https.request(options, function (response) {
