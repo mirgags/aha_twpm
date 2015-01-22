@@ -432,12 +432,16 @@ app.post('/hookcatch', function (req, res) {
 });
 
 app.get('/test', function (req, res) {
+    var body = '';
+    req.on('data', function(chunk) {
+        body += chunk;
+    });
     if(req.query['q'] === 'twpm') {
         //getTwpmTask(3317039, res);
         createTWPMTask(562384, req, res);
     };
     if(req.query['q'] === 'aha') {
-        getAhaFeature('ZINGCHART-98', req, res);
+        getAhaFeature('ZINGCHART-98', body, res);
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
