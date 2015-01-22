@@ -166,6 +166,7 @@ function getAhaFeature (featureID, theResponse) {
         });
     });
     httpReq.end();
+    return str;
 }
 
 function testSlack (theResponse) {
@@ -429,39 +430,10 @@ app.get('/test', function (req, res) {
     if(req.query['q'] === 'twpm') {
         //getTwpmTask(3317039, res);
         createTWPMTask(562384, req, res);
-        /*var taskObject = {'todo-item': {
-            'content': 'test task',
-            'description': 'test description',
-            'responsible-party-id': '86917',
-            'start-date': '20140901',
-            'due-date': '20140902',
-            'estimated-minutes': '99',
-            'creator-id': '82200',
-            'responsible-party-ids': '86917'
-            }
-        };
-        var taskOptions = {
-            host: 'clients.pint.com',
-    //      host: 'requestb.in',
-            json: true,
-            path: '/tasklists/562384/tasks.json',
-    //      path: '/116rwi21',
-            method: 'POST',
-            followRedirect: true,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Content-Length': '',
-                'Authorization': ''
-            }
-        };
-        res.writeHead(200,{'Content-Type': 'text/html'});
-        //createTWPMTask(taskObject, taskOptions, res);
-        getAhaFeature('WEB3-59', res);
-        */
     };
     if(req.query['q'] === 'aha') {
-        getAhaFeature('ZINGCHART-98', res);
+        var r = getAhaFeature('ZINGCHART-98', res);
+        console.log(JSON.stringify(r));
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
