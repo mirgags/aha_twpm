@@ -76,7 +76,7 @@ function getKey(service) {
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
     var key = theJSON[service];
-    key = key.replace(/^\s+|\s+$/g, '');
+    console.log(key);
     return key
     //return config[service];
 };
@@ -262,40 +262,6 @@ function createTWPMTask (reqObject, reqOptions, theResponse) {
     httpReq.write(params);
     httpReq.end();
 };
-
-app.get('/test', function (req, res) {
-    testSlack(res);
-    /*var taskObject = {'todo-item': {
-      	'content': 'test task',
-        'description': 'test description',
-        'responsible-party-id': '86917',
-        'start-date': '20140901',
-        'due-date': '20140902',
-        'estimated-minutes': '99',
-        'creator-id': '82200',
-        'responsible-party-ids': '86917'
-        }
-    };
-    var taskOptions = {
-    	host: 'clients.pint.com',
-//    	host: 'requestb.in',
-        json: true,
-    	path: '/tasklists/562384/tasks.json',
-//    	path: '/116rwi21',
-    	method: 'POST',
-        followRedirect: true,
-    	headers: {
-    	    'Accept': 'application/json',
-    	    'Content-Type': 'application/json',
-            'Content-Length': '',
-    	    'Authorization': ''
-        }
-    };
-    res.writeHead(200,{'Content-Type': 'text/html'});
-    //createTWPMTask(taskObject, taskOptions, res);
-    getAhaFeature('WEB3-59', res);
-    */
-});
 
 app.post('/hookcatch', function (req, res) { 
     console.log('*****');
