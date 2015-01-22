@@ -72,6 +72,7 @@ function getKey(service) {
     });
     theData = theData.replace(/^\s+|\s+$/g, '');
     console.log(theData);
+    console.log(typeof theData);
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
     var key = theJSON[service];
