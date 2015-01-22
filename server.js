@@ -158,7 +158,7 @@ function getAhaFeature (featureID, theRequest, theResponse) {
         response.on('end', function () {
             //theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
-            createTWPMTask(562384, theRequest, theResponse)
+            createTWPMTask(562384, str, theResponse)
             //theResponse.write('</body></html>');
             theResponse.end();
         });
@@ -166,9 +166,7 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             console.log('ERROR: ' + e.message);
         });
     });
-    var r = httpReq.end();
-    console.log(r);
-    //return str;
+    httpReq.end();
 }
 
 function testSlack (theResponse) {
@@ -242,10 +240,6 @@ function createSlackPost (reqObject, reqOptions, theResponse){
 };
 
 function createTWPMTask (taskListID, theRequest, theResponse) {
-    var inboundJson = JSON.parse(theRequest);
-    for(thing in inboundJson) {
-        console.log(thing + ': ' + inboundJson[thing]);
-    };
     var options = {
                 host: 'clients.pint.com',
                 json: true,
