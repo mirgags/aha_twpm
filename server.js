@@ -117,7 +117,7 @@ function getTwpmTask (taskID, theResponse) {
     httpReq.end();
 }
 
-function getAhaFeature (featureID, theResponse) {
+function getAhaFeature (featureID, theRequest, theResponse) {
     var ahaKey = getKey('aha');
     console.log(ahaKey);
     var buff = new Buffer(ahaKey);
@@ -156,9 +156,10 @@ function getAhaFeature (featureID, theResponse) {
         });
         */
         response.on('end', function () {
-            theResponse.write('<!DOCTYPE html><head></head><body>');
+            //theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
-            theResponse.write('</body></html>');
+            createTWPMTask(562384, theRequest, theResponse);
+            //theResponse.write('</body></html>');
             theResponse.end();
         });
         response.on('error', function(e) {
@@ -166,7 +167,7 @@ function getAhaFeature (featureID, theResponse) {
         });
     });
     httpReq.end();
-    return str;
+    //return str;
 }
 
 function testSlack (theResponse) {
@@ -432,8 +433,7 @@ app.get('/test', function (req, res) {
         createTWPMTask(562384, req, res);
     };
     if(req.query['q'] === 'aha') {
-        var r = getAhaFeature('ZINGCHART-98', res);
-        console.log(JSON.stringify(r));
+        getAhaFeature('ZINGCHART-98', req, res);
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
