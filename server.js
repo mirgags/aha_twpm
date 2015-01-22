@@ -238,8 +238,20 @@ function createSlackPost (reqObject, reqOptions, theResponse){
     httpReq.end();
 };
 
-function createTWPMTask (reqObject, reqOptions, theResponse) {
-    var options = reqOptions;
+function createTWPMTask (taskListID, theRequest, theResponse) {
+    var options = {
+                host: 'clients.pint.com',
+                json: true,
+                path: '/tasklists/' + taskListID + '/tasks.json',
+                method: 'POST',
+                followRedirect: true,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Content-Length': '',
+                    'Authorization': ''
+                    }
+                };
     console.log(JSON.stringify(options));
     var twpmKey = getKey('twpm');
     var buff = new Buffer(twpmKey + ':X');
@@ -247,6 +259,23 @@ function createTWPMTask (reqObject, reqOptions, theResponse) {
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
     options['headers']['Authorization'] = 'Basic ' + authStr;
+    var reqObject = {'todo-item': {
+                'content': 'test title',
+                'description': 'test description',
+                'responsible-party-id': '86917',
+/*
+                'start-date': 
+                 wholeBody.feature.release.start_date.replace(/-/g, ''),
+                'due-date':
+                 wholeBody.feature.release.release_date.replace(/-/g, ''),
+*/
+                'start-date': '',
+                'due-date': '',
+    //            'estimated-minutes': '99',
+                'creator-id': '84418',
+                'responsible-party-ids': '86917'
+                    }
+                };
     var params = JSON.stringify(reqObject);
     options['headers']['Content-Length'] = params.length;
     console.log(JSON.stringify(options));
@@ -398,7 +427,8 @@ app.post('/hookcatch', function (req, res) {
 
 app.get('/test', function (req, res) {
     if(req.query['q'] === 'twpm') {
-        getTwpmTask(3317039, res);
+        //getTwpmTask(3317039, res);
+        createTWPMTask(562384, req, res);
         /*var taskObject = {'todo-item': {
             'content': 'test task',
             'description': 'test description',
