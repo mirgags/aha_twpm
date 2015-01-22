@@ -5,7 +5,7 @@ var url = require('url');
 var qs = require('querystring');
 var express = require('express');
 var bodyParser = require('body-parser');
-var config = require('./config.json')
+var config = require('./config.json');
 
 var app = express();
 // Uncomment to implement Mongoose
@@ -421,7 +421,41 @@ app.post('/hookcatch', function (req, res) {
 app.get('/test', function (req, res) {
     if(req.query['q'] === 'twpm') {
         getTwpmTask(3317039, res);
+        /*var taskObject = {'todo-item': {
+            'content': 'test task',
+            'description': 'test description',
+            'responsible-party-id': '86917',
+            'start-date': '20140901',
+            'due-date': '20140902',
+            'estimated-minutes': '99',
+            'creator-id': '82200',
+            'responsible-party-ids': '86917'
+            }
+        };
+        var taskOptions = {
+            host: 'clients.pint.com',
+    //      host: 'requestb.in',
+            json: true,
+            path: '/tasklists/562384/tasks.json',
+    //      path: '/116rwi21',
+            method: 'POST',
+            followRedirect: true,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Content-Length': '',
+                'Authorization': ''
+            }
+        };
+        res.writeHead(200,{'Content-Type': 'text/html'});
+        //createTWPMTask(taskObject, taskOptions, res);
+        getAhaFeature('WEB3-59', res);
+        */
     };
+    if(req.query['q'] === 'slack') {
+        testSlack(res);
+    };
+    
 });
 // Implement per your environment
 app.listen(8002); 
