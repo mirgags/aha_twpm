@@ -5,6 +5,7 @@ var url = require('url');
 var qs = require('querystring');
 var express = require('express');
 var bodyParser = require('body-parser');
+var config = require('./config.json')
 
 var app = express();
 // Uncomment to implement Mongoose
@@ -44,7 +45,7 @@ function getMap(featureID, service) {
     console.log(theJSON);
     var key = theJSON[service][featureID];
     key = key.replace(/^\s+|\s+$/g, '');
-    return key
+    return key;
 }
 
 function addMap(featureID, service) {
@@ -59,10 +60,11 @@ function addMap(featureID, service) {
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
     theJSON[service] = featureID;
-    return theJSON[service]
+    return theJSON[service];
 }
 
 function getKey(service) {
+    /*
     var theData = fs.readFileSync('./config.json', 'utf-8', function (err, data) {
         if (err) {
             return console.log(err);
@@ -76,6 +78,8 @@ function getKey(service) {
     var key = theJSON[service];
     key = key.replace(/^\s+|\s+$/g, '');
     return key
+    */
+    return config[service];
 };
 
 function getTwpmTask (taskID, theResponse) {
