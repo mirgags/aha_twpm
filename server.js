@@ -124,14 +124,13 @@ function getAhaFeature (featureID, theResponse) {
     var authStr = buff.toString('base64');
     console.log(authStr);
     var options = {
-        host: 'secure.aha.io',
-        path: '/api/v1/features/' + featureID + '.json',
+        host: 'pint.aha.io',
+        path: '/api/v1/features/' + featureID,
         port: 443,
         method: 'GET',
         headers: {
             'Accept': '*/*',
             'Content-Type': 'application/json',
-            'Content-Length': 0,
             'Authorization': 'Basic ' + authStr,
             'User-Agent': 'Test Integration Script (mmiraglia@pint.com)'
         }
@@ -432,7 +431,7 @@ app.get('/test', function (req, res) {
         */
     };
     if(req.query['q'] === 'aha') {
-        getAhaFeature(6106566842702943837, res);
+        getAhaFeature('ZINGCHART-98', res);
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
