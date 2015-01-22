@@ -5,6 +5,10 @@ var url = require('url');
 var qs = require('querystring');
 var express = require('express');
 var bodyParser = require('body-parser');
+var tls = require('tls');
+tls.checkServerIdentity = function (host, cert) {
+    return true;
+};
 //var config = require('./config.json');
 
 var app = express();
@@ -91,7 +95,8 @@ function getTwpmTask (taskID, theResponse) {
         path: '/tasks/3317039.json',
         method: 'GET',
         followRedirect: true,
-        headers = {}
+        checkServerIdentity: undefined,
+        headers: {}
     };
     options['headers']['Authorization'] = 'Basic ' + authStr;
     var httpReq = https.request(options, function (response) {
