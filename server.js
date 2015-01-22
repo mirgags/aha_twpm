@@ -158,7 +158,6 @@ function getAhaFeature (featureID, theRequest, theResponse) {
         response.on('end', function () {
             //theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
-            createTWPMTask(562384, theRequest, theResponse);
             //theResponse.write('</body></html>');
             theResponse.end();
         });
@@ -166,7 +165,7 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             console.log('ERROR: ' + e.message);
         });
     });
-    httpReq.end();
+    httpReq.end(createTWPMTask(562384, str, theResponse));
     //return str;
 }
 
@@ -241,7 +240,7 @@ function createSlackPost (reqObject, reqOptions, theResponse){
 };
 
 function createTWPMTask (taskListID, theRequest, theResponse) {
-    var inboundJson = JSON.parse(theRequest.body);
+    var inboundJson = JSON.parse(theRequest);
     for(thing in inboundJson) {
         console.log(thing + ': ' + inboundJson[thing]);
     };
@@ -436,18 +435,16 @@ app.get('/test', function (req, res) {
     req.on('data', function(chunk) {
         body += chunk;
     });
-    req.on('end', function () {
-        if(req.query['q'] === 'twpm') {
-            //getTwpmTask(3317039, res);
-            createTWPMTask(562384, req, res);
-        };
-        if(req.query['q'] === 'aha') {
-            getAhaFeature('ZINGCHART-98', req, res);
-        };
-        if(req.query['q'] === 'slack') {
-            testSlack(res);
-        };
-    });
+    if(req.query['q'] === 'twpm') {
+        //getTwpmTask(3317039, res);
+        createTWPMTask(562384, req, res);
+    };
+    if(req.query['q'] === 'aha') {
+        getAhaFeature('ZINGCHART-98', req, res);
+    };
+    if(req.query['q'] === 'slack') {
+        testSlack(res);
+    };
 });
 // Implement per your environment
 app.listen(8002); 
