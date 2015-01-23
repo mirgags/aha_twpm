@@ -52,7 +52,7 @@ function getMap(featureID, service) {
     return key;
 }
 
-function addMap(featureID, service) {
+function addMap(featureID, service, mapToID) {
     var theData = fs.readFileSync('./map.json', 'utf-8', function (err, data) {
         if (err) {
             return console.log(err);
@@ -63,7 +63,7 @@ function addMap(featureID, service) {
     console.log(theData);
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
-    theJSON[service] = {featureID: null};
+    theJSON[service] = {featureID: mapToID};
 
     return theJSON[service];
 }
@@ -149,6 +149,7 @@ function getAhaFeature (featureID, theRequest, theResponse) {
                 createTWPMTask(562384, str, theResponse, function(respTaskID) {
                     newJson = JSON.parse(respTaskID);
                     console.log(newJson['id']);
+
                 });
             };
             theResponse.end();
