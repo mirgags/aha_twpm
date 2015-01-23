@@ -305,7 +305,6 @@ app.post('/hookcatch', function (req, res) {
     console.log('body: \n' + req.body);
     console.log('querystring: ' + req.query);
     if(req.query['q'] === 'aha') {
-        /*
         var wholeBody = JSON.parse(req.body);
         console.log(wholeBody);
         res.writeHead(200,{'Content-Type': 'text/html'});
@@ -356,7 +355,6 @@ app.post('/hookcatch', function (req, res) {
                 //createTWPMTask (taskObject, taskOptions, res);
                 //console.log('feature: ' + wholeBody.feature.name);
             }
-            */
 	}
 	else {
 	    res.end('Webhook received');
@@ -399,14 +397,17 @@ app.post('/hookcatch', function (req, res) {
         */
     };
     if(req.query['q'] === 'test') {
-        var inboundJson = JSON.parse(req);
+        var inboundJson = JSON.parse(req.body);
         console.log(JSON.stringify(inboundJson));
         if(req.query['s'] === 'twpm') {
             //getTwpmTask(3317039, res);
             createTWPMTask(562384, req, res);
         };
         if(req.query['s'] === 'aha') {
-            var auditUrl = inboundJson['audit'];
+            var auditUrl = inboundJson['audit']['auditable_url'];
+            var parsedUrl = url.parse(auditUrl);
+            var pathList = parsedUrl.pathname;
+            console.log(pathList[pathList.length]);
             //getAhaFeature('ZINGCHART-98', req, res);
         };
         if(req.query['s'] === 'slack') {
