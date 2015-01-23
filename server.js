@@ -63,7 +63,7 @@ function addMap(featureID, service) {
     console.log(theData);
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
-    theJSON[service] = featureID;
+    theJSON[service] = {featureID: null};
     return theJSON[service];
 }
 
@@ -408,11 +408,13 @@ app.post('/hookcatch', function (req, res) {
         };
         if(req.query['s'] === 'aha') {
             var auditUrl = inboundJson['audit']['auditable_url'];
-            console.log(auditUrl);
-            var pathList = url.parse(auditUrl).pathname.split('/');
-            console.log(JSON.stringify(pathList));
-            console.log(pathList[pathList.length - 1]);
-            getAhaFeature(pathList[pathList.length - 1], req, res);
+            if(typeof auditUrl !== 'undefined') {
+                console.log(auditUrl);
+                var pathList = url.parse(auditUrl).pathname.split('/');
+                console.log(JSON.stringify(pathList));
+                console.log(pathList[pathList.length - 1]);
+                getAhaFeature(pathList[pathList.length - 1], req, res);
+            };
         };
         if(req.query['s'] === 'slack') {
             testSlack(res);
