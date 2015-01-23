@@ -146,10 +146,9 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             theResponse.write(str);
             var ahaTwpmMap = getMap(featureID, 'aha');
             if(typeof ahaTwpmMap === 'undefined') {
-                var callback = function (createTWPMTask) {
-                    createTWPMTask(562384, str, theResponse);
-                };
-                console.log(callback);
+                createTWPMTask(562384, str, theResponse, function(respTaskID) {
+                    console.log(respTaskID);
+                });
             };
             theResponse.end();
         });
@@ -230,7 +229,7 @@ function createSlackPost (reqObject, reqOptions, theResponse){
     httpReq.end();
 };
 
-function createTWPMTask (taskListID, theRequest, theResponse) {
+function createTWPMTask (taskListID, theRequest, theResponse, callback) {
     var options = {
                 host: 'clients.pint.com',
                 json: true,
@@ -287,6 +286,7 @@ function createTWPMTask (taskListID, theRequest, theResponse) {
             theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
             theResponse.write('</body></html>');
+            callback(str);
             theResponse.end();
         });
         response.on('error', function(e) {
