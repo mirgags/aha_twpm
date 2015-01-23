@@ -405,8 +405,8 @@ app.post('/hookcatch', function (req, res) {
         };
         if(req.query['s'] === 'aha') {
             var auditUrl = inboundJson['audit']['auditable_url'];
-            var parsedUrl = url.parse(auditUrl);
-            var pathList = parsedUrl.pathname;
+            console.log(auditUrl);
+            var pathList = url.parse(auditUrl).pathname.split('/');
             console.log(pathList[pathList.length]);
             //getAhaFeature('ZINGCHART-98', req, res);
         };
