@@ -64,7 +64,9 @@ function addMap(featureID, service, mapToID) {
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
     theJSON[service] = {featureID: mapToID};
-
+    fs.writeFile('./map.json', JSON.stringify(theJSON), function (err) {
+        if(err) throw err;
+    });
     return theJSON[service];
 }
 
