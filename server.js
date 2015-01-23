@@ -143,7 +143,10 @@ function getAhaFeature (featureID, theRequest, theResponse) {
         });
         response.on('end', function () {
             theResponse.write(str);
-            createTWPMTask(562384, str, theResponse)
+            var ahaTwpmMap = getMap(featureID, 'aha');
+            if(typeof ahaTwpmMap === 'undefined') {
+                createTWPMTask(562384, str, theResponse);
+            };
             theResponse.end();
         });
         response.on('error', function(e) {
@@ -407,8 +410,9 @@ app.post('/hookcatch', function (req, res) {
             var auditUrl = inboundJson['audit']['auditable_url'];
             console.log(auditUrl);
             var pathList = url.parse(auditUrl).pathname.split('/');
-            console.log(pathList[pathList.length]);
-            //getAhaFeature('ZINGCHART-98', req, res);
+            console.log(JSON.stringify(pathList));
+            console.log(pathList[pathList.length - 1]);
+            getAhaFeature(pathList[pathList.length - 1], req, res);
         };
         if(req.query['s'] === 'slack') {
             testSlack(res);
