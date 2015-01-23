@@ -147,7 +147,7 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             var ahaTwpmMap = getMap(featureID, 'aha');
             if(typeof ahaTwpmMap === 'undefined') {
                 var callback = function () {
-                    createTWPMTask(562384, str, theResponse);
+                    return createTWPMTask(562384, str, theResponse);
                 };
                 console.log(callback);
             };
@@ -294,7 +294,9 @@ function createTWPMTask (taskListID, theRequest, theResponse) {
         });
     });
     httpReq.write(params);
-    httpReq.end();
+    return function () {
+        httpReq.end();
+    };
 };
 
 app.post('/hookcatch', function (req, res) { 
