@@ -224,8 +224,6 @@ function createSlackPost (reqObject, reqOptions, theResponse){
 };
 
 function createTWPMTask (taskListID, theRequest, theResponse) {
-    var inboundJson = JSON.parse(theRequest);
-    console.log(JSON.stringify(inboundJson));
     var options = {
                 host: 'clients.pint.com',
                 json: true,
@@ -307,6 +305,7 @@ app.post('/hookcatch', function (req, res) {
     console.log('body: \n' + req.body);
     console.log('querystring: ' + req.query);
     if(req.query['q'] === 'aha') {
+        /*
         var wholeBody = JSON.parse(req.body);
         console.log(wholeBody);
         res.writeHead(200,{'Content-Type': 'text/html'});
@@ -357,6 +356,7 @@ app.post('/hookcatch', function (req, res) {
                 //createTWPMTask (taskObject, taskOptions, res);
                 //console.log('feature: ' + wholeBody.feature.name);
             }
+            */
 	}
 	else {
 	    res.end('Webhook received');
@@ -399,7 +399,19 @@ app.post('/hookcatch', function (req, res) {
         */
     };
     if(req.query['q'] === 'test') {
-        getTwpmTask(3317039, res);
+        var inboundJson = JSON.parse(req);
+        console.log(JSON.stringify(inboundJson));
+        if(req.query['s'] === 'twpm') {
+            //getTwpmTask(3317039, res);
+            createTWPMTask(562384, req, res);
+        };
+        if(req.query['s'] === 'aha') {
+            var auditUrl = inboundJson['audit'];
+            //getAhaFeature('ZINGCHART-98', req, res);
+        };
+        if(req.query['s'] === 'slack') {
+            testSlack(res);
+        };
     }
 
     req.on('end', function() {
@@ -417,11 +429,14 @@ app.get('/test', function (req, res) {
     req.on('data', function(chunk) {
         body += chunk;
     });
+    var inboundJson = JSON.parse(req);
+    console.log(JSON.stringify(inboundJson));
     if(req.query['q'] === 'twpm') {
         //getTwpmTask(3317039, res);
         createTWPMTask(562384, req, res);
     };
     if(req.query['q'] === 'aha') {
+        var auditUrl = inboundJson['audit'];
         getAhaFeature('ZINGCHART-98', req, res);
     };
     if(req.query['q'] === 'slack') {
