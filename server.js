@@ -48,7 +48,7 @@ function getMap(featureID, service) {
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
     var key = theJSON[service][featureID];
-    key = key.replace(/^\s+|\s+$/g, '');
+    //key = key.replace(/^\s+|\s+$/g, '');
     return key;
 }
 
@@ -64,6 +64,7 @@ function addMap(featureID, service) {
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
     theJSON[service] = {featureID: null};
+
     return theJSON[service];
 }
 
@@ -145,7 +146,10 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             theResponse.write(str);
             var ahaTwpmMap = getMap(featureID, 'aha');
             if(typeof ahaTwpmMap === 'undefined') {
-                createTWPMTask(562384, str, theResponse);
+                var callback = function () {
+                    createTWPMTask(562384, str, theResponse);
+                };
+                console.log(callback);
             };
             theResponse.end();
         });
