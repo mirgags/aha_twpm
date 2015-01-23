@@ -141,25 +141,9 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             str += chunk;
             console.log('data received: ');
         });
-        /*
         response.on('end', function () {
-            console.log('hit request end');
-            console.log(str);
-            console.log(response.statusCode);
-            /*theResponse.write('<!DOCTYPE html><head></head><body>');
-            theResponse.write(str);
-            theResponse.write('</body></html>');
-            theResponse.end();
-            var featureJSON = JSON.parse(str);
-            reqObject['todo-item']['description'] = featureJSON['feature']['description']['body'];
-            createTWPMTask (reqObject, reqOptions, theResponse);
-        });
-        */
-        response.on('end', function () {
-            //theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
             createTWPMTask(562384, str, theResponse)
-            //theResponse.write('</body></html>');
             theResponse.end();
         });
         response.on('error', function(e) {
@@ -241,9 +225,7 @@ function createSlackPost (reqObject, reqOptions, theResponse){
 
 function createTWPMTask (taskListID, theRequest, theResponse) {
     var inboundJson = JSON.parse(theRequest);
-    for(thing in inboundJson) {
-        console.log(thing + ': ' + inboundJson[thing]);
-    };
+    console.log(JSON.stringify(inboundJson));
     var options = {
                 host: 'clients.pint.com',
                 json: true,
@@ -447,6 +429,6 @@ app.get('/test', function (req, res) {
     };
 });
 // Implement per your environment
-app.listen(8002); 
+app.listen(80); 
  
 console.log('You got the server running, fishbulb.');
