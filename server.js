@@ -240,8 +240,9 @@ function createSlackPost (reqObject, reqOptions, theResponse){
 };
 
 function createTWPMTask (taskListID, theRequest, theResponse) {
-    for(thing in theRequest) {
-        console.log(thing + ': ' + theRequest[thing]);
+    var inboundJson = JSON.parse(theRequest);
+    for(thing in inboundJson) {
+        console.log(thing + ': ' + inboundJson[thing]);
     };
     var options = {
                 host: 'clients.pint.com',
