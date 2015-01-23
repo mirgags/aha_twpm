@@ -147,7 +147,8 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             var ahaTwpmMap = getMap(featureID, 'aha');
             if(typeof ahaTwpmMap === 'undefined') {
                 createTWPMTask(562384, str, theResponse, function(respTaskID) {
-                    console.log(respTaskID);
+                    newJson = JSON.parse(respTaskID);
+                    console.log(newJson['id']);
                 });
             };
             theResponse.end();
