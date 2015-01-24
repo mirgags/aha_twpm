@@ -138,7 +138,7 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             'User-Agent': 'Test Integration Script (mmiraglia@pint.com)'
         }
     };
-    var httpReq = https.request(options, function (response) {
+    var httpReq = https.request(options, function (response, featureID) {
         var str = '';
         response.on('data', function(chunk) {
             str += chunk;
