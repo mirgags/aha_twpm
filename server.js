@@ -248,7 +248,7 @@ function createTWPMTask (taskListID, theRequest, theResponse, callback) {
                     }
                 };
     console.log(JSON.stringify(options));
-    console.log('theRequest: ' + JSON.stringify(theRequest);
+    console.log('theRequest: ' + JSON.stringify(theRequest));
     var twpmKey = getKey('twpm');
     var buff = new Buffer(twpmKey + ':X');
     var authStr = buff.toString('base64');
