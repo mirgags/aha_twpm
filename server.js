@@ -120,7 +120,7 @@ function getTwpmTask (taskID, theResponse) {
     httpReq.end();
 }
 
-function getAhaFeature (featureID, theRequest, theResponse) {
+function getAhaFeature (featureID, theResponse) {
     var ahaKey = getKey('aha');
     console.log(ahaKey);
     var buff = new Buffer(ahaKey);
@@ -148,8 +148,8 @@ function getAhaFeature (featureID, theRequest, theResponse) {
             theResponse.write(str);
             var ahaTwpmMap = getMap(featureID, 'aha');
             if(typeof ahaTwpmMap === 'undefined') {
-                createTWPMTask(562384, str, theResponse, function(featureID, respTaskID) {
-                    newJson = JSON.parse(respTaskID)["id"];
+                createTWPMTask(562384, str, theResponse, function(respTaskID, featureID) {
+                    newJson = JSON.parse(respTaskID);
                     console.log('key: ' + featureID + ', value:' + newJson['id']);
                     addMap(featureID, 'aha', newJson['id']);
                 });
@@ -248,6 +248,7 @@ function createTWPMTask (taskListID, theRequest, theResponse, callback) {
                     }
                 };
     console.log(JSON.stringify(options));
+    console.log(theRequest);
     var twpmKey = getKey('twpm');
     var buff = new Buffer(twpmKey + ':X');
     var authStr = buff.toString('base64');
@@ -421,7 +422,7 @@ app.post('/hookcatch', function (req, res) {
                 var pathList = url.parse(auditUrl).pathname.split('/');
                 console.log(JSON.stringify(pathList));
                 console.log(pathList[pathList.length - 1]);
-                getAhaFeature(pathList[pathList.length - 1], req, res);
+                getAhaFeature(pathList[pathList.length - 1], res);
             };
         };
         if(req.query['s'] === 'slack') {
