@@ -248,7 +248,7 @@ function createTWPMTask (taskListID, theRequest, theResponse, callback) {
                     }
                 };
     console.log(JSON.stringify(options));
-    console.log(theRequest);
+    console.log('theRequest: ' + JSON.stringify(theRequest);
     var twpmKey = getKey('twpm');
     var buff = new Buffer(twpmKey + ':X');
     var authStr = buff.toString('base64');
@@ -291,7 +291,7 @@ function createTWPMTask (taskListID, theRequest, theResponse, callback) {
             theResponse.write('<!DOCTYPE html><head></head><body>');
             theResponse.write(str);
             theResponse.write('</body></html>');
-            callback(str);
+            callback(str, featureID);
             theResponse.end();
         });
         response.on('error', function(e) {
