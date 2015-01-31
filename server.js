@@ -120,7 +120,7 @@ function getTwpmTask (taskID, theResponse) {
     httpReq.end();
 }
 
-function getAhaFeature (featureID, theResponse) {
+function getAhaFeature (featureID, incomingJson, callback1) {
     var ahaKey = getKey('aha');
     console.log(ahaKey);
     var buff = new Buffer(ahaKey);
@@ -145,16 +145,14 @@ function getAhaFeature (featureID, theResponse) {
             console.log('data received: ');
         });
         response.on('end', function () {
-            theResponse.write(str);
             var ahaTwpmMap = getMap(featureID, 'aha');
             if(typeof ahaTwpmMap === 'undefined') {
-                createTWPMTask(562384, str, theResponse, function(respTaskID, featureID) {
+                createTWPMTask(562384, str, incomingJson, function() {
                     newJson = JSON.parse(respTaskID);
                     console.log('key: ' + featureID + ', value:' + newJson['id']);
                     addMap(featureID, 'aha', newJson['id']);
                 });
             };
-            theResponse.end();
         });
         response.on('error', function(e) {
             console.log('ERROR: ' + e.message);
@@ -233,7 +231,7 @@ function createSlackPost (reqObject, reqOptions, theResponse){
     httpReq.end();
 };
 
-function createTWPMTask (taskListID, theRequest, theResponse, callback) {
+function createTWPMTask (taskListID, theRequest, callback2) {
     var options = {
                 host: 'clients.pint.com',
                 json: true,
@@ -288,11 +286,7 @@ function createTWPMTask (taskListID, theRequest, theResponse, callback) {
             console.log('hit request end');
             console.log(str);
             console.log(response.statusCode);
-            theResponse.write('<!DOCTYPE html><head></head><body>');
-            theResponse.write(str);
-            theResponse.write('</body></html>');
-            callback(str, featureID);
-            theResponse.end();
+            callback2(str, featureID);
         });
         response.on('error', function(e) {
             console.log('ERROR: ' + e.message);
@@ -422,7 +416,7 @@ app.post('/hookcatch', function (req, res) {
                 var pathList = url.parse(auditUrl).pathname.split('/');
                 console.log(JSON.stringify(pathList));
                 console.log(pathList[pathList.length - 1]);
-                getAhaFeature(pathList[pathList.length - 1], res);
+                getAhaFeature(pathList[pathList.length - 1], inboundJson['audit']);
             };
         };
         if(req.query['s'] === 'slack') {
@@ -432,7 +426,7 @@ app.post('/hookcatch', function (req, res) {
 
     req.on('end', function() {
         res.writeHead(200,{'Content-Type': 'text/html'}); 
-        res.end('<!DOCTYPE html><head></head><body>'+body+'</body>');
+        res.end('<!DOCTYPE html><head></head><body>Request Received</body>');
     });
     req.on('error', function(e) {
         console.log('ERROR: ' + e.message);
@@ -445,19 +439,53 @@ app.get('/test', function (req, res) {
     req.on('data', function(chunk) {
         body += chunk;
     });
-    var inboundJson = JSON.parse(req);
-    console.log(JSON.stringify(inboundJson));
     if(req.query['q'] === 'twpm') {
         //getTwpmTask(3317039, res);
         createTWPMTask(562384, req, res);
     };
     if(req.query['q'] === 'aha') {
-        var auditUrl = inboundJson['audit'];
-        getAhaFeature('ZINGCHART-98', req, res);
+        console.log('hit it');
+        var testJson = {"event":"audit",
+            "audit":{
+                "id":"6109944855961868591",
+                "audit_action":"create",
+                "created_at":"2015-01-30T01:46:33Z",
+                "interesting":true,
+                "user":{
+                    "id":"5961857441598602203",
+                    "name":"Thomas Powell",
+                    "email":"tpowell@pint.com"
+                },
+                "auditable_type":"feature",
+                "auditable_id":"6109944855963418085",
+                "description":"added feature ZINGCHART-3 Pictograph Module",
+                "auditable_url":"https://pint.aha.io:443/features/ZINGCHART-3",
+                "changes":[
+                    {"field_name":"Release","value":"ZINGCHART-R-10 Parking Lot"},
+                    {"field_name":"Reference num","value":"ZINGCHART-3"},
+                    {"field_name":"Created by user","value":"Thomas Powell"},
+                    {"field_name":"Rank","value":1},
+                    {"field_name":"Name","value":"Pictograph Module"},
+                    {"field_name":"Type","value":"New"},
+                    {"field_name":"Score","value":0},
+                    {"field_name":"Assigned to user","value":"Default assignee"},
+                    {"field_name":"Show feature remaining estimate","value":true},
+                    {"field_name":"Workflow status","value":"Under consideration"},
+                    {"field_name":"Type","value":"New"}
+                ]
+            }
+        };
+        console.log(JSON.stringify(testJson));
+        var auditUrl = testJson['audit'];
+        getAhaFeature(testJson['audit']['changes'][2]['value'], testJson['audit']);
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
     };
+    req.on('end', function() {
+        res.writeHead(200,{'Content-Type': 'text/html'});
+        res.end('<!DOCTYPE html><head></head><body>Request Received</body>');
+    });
 });
 // Implement per your environment
 app.listen(80); 
