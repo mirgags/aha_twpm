@@ -43,7 +43,7 @@ function getMap(featureID, service) {
         };
         return data;
     });
-    theData = theData.replace(/^\s+|\s+$/g, '');
+    //theData = theData.replace(/^\s+|\s+$/g, '');
     console.log(theData);
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
@@ -59,11 +59,12 @@ function addMap(featureID, service, mapToID) {
         };
         return data;
     });
-    theData = theData.replace(/^\s+|\s+$/g, '');
+    //theData = theData.replace(/^\s+|\s+$/g, '');
     console.log(theData);
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
-    theJSON[service] = {featureID: mapToID};
+    console.log('adding ahaID: ' + featureID);
+    theJSON[service][featureID] = mapToID;
     fs.writeFile('./map.json', JSON.stringify(theJSON), function (err) {
         if(err) throw err;
     });
@@ -77,7 +78,7 @@ function getKey(service) {
         };
         return data;
     });
-    theData = theData.replace(/^\s+|\s+$/g, '');
+    //theData = theData.replace(/^\s+|\s+$/g, '');
     console.log(theData);
     console.log(typeof theData);
     var theJSON = JSON.parse(theData);
@@ -120,12 +121,12 @@ function getTwpmTask (taskID, theResponse) {
     httpReq.end();
 }
 
-function getAhaFeature (featureID, incomingJson, callback1) {
+function getAhaFeature (featureID) {
     var ahaKey = getKey('aha');
-    console.log(ahaKey);
+    console.log('featureID1: ' + featureID);
     var buff = new Buffer(ahaKey);
     var authStr = buff.toString('base64');
-    console.log(authStr);
+    //console.log(authStr);
     var options = {
         host: 'pint.aha.io',
         path: '/api/v1/features/' + featureID,
@@ -138,19 +139,23 @@ function getAhaFeature (featureID, incomingJson, callback1) {
             'User-Agent': 'Test Integration Script (mmiraglia@pint.com)'
         }
     };
-    var httpReq = https.request(options, function (response, featureID) {
+    var httpReq = https.request(options, function (response) {
         var str = '';
         response.on('data', function(chunk) {
             str += chunk;
             console.log('data received: ');
         });
         response.on('end', function () {
+            console.log('aha response: ' + JSON.stringify(str));
+            var ahaResp = JSON.parse(str);
+            var featureID = ahaResp['feature']['reference_num'];
             var ahaTwpmMap = getMap(featureID, 'aha');
             if(typeof ahaTwpmMap === 'undefined') {
-                createTWPMTask(562384, str, incomingJson, function() {
-                    newJson = JSON.parse(respTaskID);
-                    console.log('key: ' + featureID + ', value:' + newJson['id']);
-                    addMap(featureID, 'aha', newJson['id']);
+                console.log('featureID3: ' + featureID);
+                var twpmID = createTWPMTask(562384, featureID, function(ahaID, respTaskID, func) {
+                    console.log('key: ' + ahaID + ', value:' + respTaskID);
+                    console.log('featureID: ' + featureID);
+                    func(ahaID, 'aha', respTaskID);
                 });
             };
         });
@@ -245,8 +250,8 @@ function createTWPMTask (taskListID, theRequest, callback2) {
                     'Authorization': ''
                     }
                 };
-    console.log(JSON.stringify(options));
-    console.log('theRequest: ' + JSON.stringify(theRequest));
+    console.log('options' + JSON.stringify(options));
+    console.log('theRequestID: ' + theRequest);
     var twpmKey = getKey('twpm');
     var buff = new Buffer(twpmKey + ':X');
     var authStr = buff.toString('base64');
@@ -284,9 +289,10 @@ function createTWPMTask (taskListID, theRequest, callback2) {
     	});
     	response.on('end', function () {
             console.log('hit request end');
-            console.log(str);
+            console.log('tw response: ' + str);
             console.log(response.statusCode);
-            callback2(str, featureID);
+            var twpmJson = JSON.parse(str);
+            callback2(theRequest, twpmJson['id'], addMap);
         });
         response.on('error', function(e) {
             console.log('ERROR: ' + e.message);
@@ -477,7 +483,7 @@ app.get('/test', function (req, res) {
         };
         console.log(JSON.stringify(testJson));
         var auditUrl = testJson['audit'];
-        getAhaFeature(testJson['audit']['changes'][2]['value'], testJson['audit']);
+        getAhaFeature('SDVP-1');
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
