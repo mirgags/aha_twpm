@@ -47,7 +47,13 @@ function getMap(featureID, service) {
     console.log(theData);
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
-    var key = theJSON[service][featureID];
+    var theMapID = theJSON[service][featureID]
+    try {
+        var key = theJSON['map'][theMapID][service];
+    }
+    catch(e) {
+        var key = undefined;
+    }
     //key = key.replace(/^\s+|\s+$/g, '');
     return key;
 }
@@ -64,8 +70,28 @@ function addMap(featureID, service, mapToID) {
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
     console.log('adding ahaID: ' + featureID);
-    theJSON[service][featureID] = mapToID;
-    fs.writeFile('./map.json', JSON.stringify(theJSON), function (err) {
+    idString = '';
+    var alphaList = ['a','b','c','d','e','f','g','h','i','j'];
+    for(i=0;i<16;i++) {
+        var n = Math.floor(Math.random() * 10)
+        if(i%2===0) {
+            idString += n.toString();
+        }
+        else {
+            idString += alphaList[n];
+        };
+    };
+    if(service === 'aha') {
+        theJSON['map'][idString] = {"aha": featureID, "twpm": mapToID};
+        theJSON['aha'][featureID] = idString;
+        theJSON['twpm'][mapToID] = idString;
+    };
+    if(service === 'twpm') {
+        theJSON['map'][idString] = {"twpm": featureID, "aha": mapToID};
+        theJSON['aha'][mapToID] = idString;
+        theJSON['twpm'][featureID] = idString;
+    };
+    fs.writeFile('./map.json', JSON.stringify(theJSON,undefined,2), function (err) {
         if(err) throw err;
     });
     return theJSON[service];
@@ -151,8 +177,20 @@ function getAhaFeature (featureID) {
             var featureID = ahaResp['feature']['reference_num'];
             var ahaTwpmMap = getMap(featureID, 'aha');
             if(typeof ahaTwpmMap === 'undefined') {
+                var reqObject = {'todo-item': {
+                    'content': ahaResp['feature']['name'],
+                    'description': ahaResp['feature']['description']['body'].replace(/(<([^>]+)>)/ig,""),
+                    'responsible-party-id': '86917',
+                    'start-date': '',
+                    'due-date': '',
+        //            'estimated-minutes': '99',
+                    'creator-id': '84418',
+                    'responsible-party-ids': '86917'
+                    }
+                };
                 console.log('featureID3: ' + featureID);
-                var twpmID = createTWPMTask(562384, featureID, function(ahaID, respTaskID, func) {
+                var twpmID = createTWPMTask(562384, featureID, reqObject ,function(ahaID, respTaskID, func) {
+
                     console.log('key: ' + ahaID + ', value:' + respTaskID);
                     console.log('featureID: ' + featureID);
                     func(ahaID, 'aha', respTaskID);
@@ -236,7 +274,7 @@ function createSlackPost (reqObject, reqOptions, theResponse){
     httpReq.end();
 };
 
-function createTWPMTask (taskListID, theRequest, callback2) {
+function createTWPMTask (taskListID, theRequest, reqObject, callback2) {
     var options = {
                 host: 'clients.pint.com',
                 json: true,
@@ -258,16 +296,15 @@ function createTWPMTask (taskListID, theRequest, callback2) {
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
     options['headers']['Authorization'] = 'Basic ' + authStr;
-    var reqObject = {'todo-item': {
+/*    var reqObject = {'todo-item': {
                 'content': 'test title',
                 'description': 'test description',
                 'responsible-party-id': '86917',
-/*
+
                 'start-date': 
                  wholeBody.feature.release.start_date.replace(/-/g, ''),
                 'due-date':
                  wholeBody.feature.release.release_date.replace(/-/g, ''),
-*/
                 'start-date': '',
                 'due-date': '',
     //            'estimated-minutes': '99',
@@ -275,6 +312,7 @@ function createTWPMTask (taskListID, theRequest, callback2) {
                 'responsible-party-ids': '86917'
                     }
                 };
+*/
     var params = JSON.stringify(reqObject);
     options['headers']['Content-Length'] = params.length;
     console.log(JSON.stringify(options));
@@ -483,7 +521,7 @@ app.get('/test', function (req, res) {
         };
         console.log(JSON.stringify(testJson));
         var auditUrl = testJson['audit'];
-        getAhaFeature('SDVP-1');
+        getAhaFeature('ZINGCHART-63');
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);

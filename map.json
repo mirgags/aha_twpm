@@ -1,1 +1,20 @@
-{"aha":{},"twpm":{}}
+{
+  "aha": {
+    "ZINGCHART-79": "2h6c4i7c0g8d9a0b",
+    "ZINGCHART-63": "2j4g3h5b2g3b8h4j"
+  },
+  "twpm": {
+    "3710017": "2h6c4i7c0g8d9a0b",
+    "3710018": "2j4g3h5b2g3b8h4j"
+  },
+  "map": {
+    "2h6c4i7c0g8d9a0b": {
+      "aha": "ZINGCHART-79",
+      "twpm": "3710017"
+    },
+    "2j4g3h5b2g3b8h4j": {
+      "aha": "ZINGCHART-63",
+      "twpm": "3710018"
+    }
+  }
+}
