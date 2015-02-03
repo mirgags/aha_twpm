@@ -521,7 +521,7 @@ app.get('/test', function (req, res) {
         };
         console.log(JSON.stringify(testJson));
         var auditUrl = testJson['audit'];
-        getAhaFeature('ZINGCHART-63');
+        getAhaFeature('ZINGCHART-21');
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
