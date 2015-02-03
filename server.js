@@ -188,8 +188,17 @@ function getAhaFeature (featureID) {
                     'responsible-party-ids': '86917'
                     }
                 };
+                if(featureID.indexOf('ZINGCHART') >= 0) {
+                    reqObject['todo-item']['content'] = 'PINT - ZingChart Development: ' + reqObject['todo-item']['content'];
+                    var taskListID = 598932;
+                };
+                if(featureID.indexOf('ZINGGRID') >= 0) {
+                    reqObject['todo-item']['content'] = 'ZingGrid Development: ' + reqObject['todo-item']['content'];
+                    var taskListID = 598933;
+                };
+                
                 console.log('featureID3: ' + featureID);
-                var twpmID = createTWPMTask(562384, featureID, reqObject ,function(ahaID, respTaskID, func) {
+                var twpmID = createTWPMTask(taskListID, featureID, reqObject ,function(ahaID, respTaskID, func) {
 
                     console.log('key: ' + ahaID + ', value:' + respTaskID);
                     console.log('featureID: ' + featureID);
@@ -521,7 +530,7 @@ app.get('/test', function (req, res) {
         };
         console.log(JSON.stringify(testJson));
         var auditUrl = testJson['audit'];
-        getAhaFeature('ZINGCHART-21');
+        getAhaFeature('ZINGGRID-46');
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
