@@ -5,6 +5,7 @@ var url = require('url');
 var qs = require('querystring');
 var express = require('express');
 var bodyParser = require('body-parser');
+var uuid = require('node-uuid');
 var tls = require('tls');
 tls.checkServerIdentity = function (host, cert) {
     return undefined;
@@ -70,17 +71,7 @@ function addMap(featureID, service, mapToID) {
     var theJSON = JSON.parse(theData);
     console.log(theJSON);
     console.log('adding ahaID: ' + featureID);
-    idString = '';
-    var alphaList = ['a','b','c','d','e','f','g','h','i','j'];
-    for(i=0;i<16;i++) {
-        var n = Math.floor(Math.random() * 10)
-        if(i%2===0) {
-            idString += n.toString();
-        }
-        else {
-            idString += alphaList[n];
-        };
-    };
+    var idString = uuid.v4();
     if(service === 'aha') {
         theJSON['map'][idString] = {"aha": featureID, "twpm": mapToID};
         theJSON['aha'][featureID] = idString;
@@ -147,14 +138,14 @@ function getTwpmTask (taskID, theResponse) {
     httpReq.end();
 }
 
-function getAhaFeature (featureID) {
+function getAhaFeature (featureID, baseURL) {
     var ahaKey = getKey('aha');
     console.log('featureID1: ' + featureID);
     var buff = new Buffer(ahaKey);
     var authStr = buff.toString('base64');
     //console.log(authStr);
     var options = {
-        host: 'pint.aha.io',
+        host: baseURL,
         path: '/api/v1/features/' + featureID,
         port: 443,
         method: 'GET',
@@ -196,7 +187,10 @@ function getAhaFeature (featureID) {
                     reqObject['todo-item']['content'] = 'ZingGrid Development: ' + reqObject['todo-item']['content'];
                     var taskListID = 598933;
                 };
-                
+                if(featureID.indexOf('LF') >= 0) {
+                    reqObject['todo-item']['content'] = 'WebSystems3 - Mobile Commerce Enhancement: ' + reqObject['todo-item']['content'];
+                    var taskListID = 598940;
+                };
                 console.log('featureID3: ' + featureID);
                 var twpmID = createTWPMTask(taskListID, featureID, reqObject ,function(ahaID, respTaskID, func) {
 
@@ -530,7 +524,12 @@ app.get('/test', function (req, res) {
         };
         console.log(JSON.stringify(testJson));
         var auditUrl = testJson['audit'];
-        getAhaFeature('ZINGGRID-46');
+        if(req.query['company'] === 'pint') {
+            getAhaFeature('ZINGCHART-23', 'pint.aha.io');
+        }
+        if(req.query['company'] === 'coopervision') {
+            getAhaFeature('LF-78', 'websystem3.aha.io');
+        }
     };
     if(req.query['q'] === 'slack') {
         testSlack(res);
