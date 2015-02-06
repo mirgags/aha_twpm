@@ -210,6 +210,36 @@ function getAhaFeature (featureID, baseURL) {
     httpReq.end();
 }
 
+function getAhaComment(commentID, baseURL) {
+    var ahaKey = getKey('aha');
+    console.log('featureID1: ' + featureID);
+    var buff = new Buffer(ahaKey);
+    var authStr = buff.toString('base64');
+    //console.log(authStr);
+    var options = {
+        host: baseURL,
+        path: '/api/v1/features/' + featureID,
+        port: 443,
+        method: 'GET',
+        headers: {
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+            'Authorization': 'Basic ' + authStr,
+            'User-Agent': 'Test Integration Script (mmiraglia@pint.com)'
+        }
+    };
+    var httpReq = https.request(options, function (response) {
+        var str = '';
+        response.on('data', function(chunk) {
+            str += chunk;
+            console.log('data received: ');
+        });
+        response.on('end', function () {
+            console.log(str);
+        };
+    };
+}
+
 function postAhaComment(featureID, baseURL, reqObject) {
     var ahaKey = getKey('aha');
     console.log('featureID1: ' + featureID);
@@ -466,7 +496,12 @@ app.post('/hookcatch', function (req, res) {
                 var pathList = url.parse(auditUrl).pathname.split('/');
                 console.log(JSON.stringify(pathList));
                 console.log(pathList[pathList.length - 1]);
-                getAhaFeature(pathList[pathList.length - 1], inboundJson['audit']);
+                if(inboundJson['audit']['auditable_type'] === 'feature') {
+                    getAhaFeature(pathList[pathList.length - 1], inboundJson['audit']);
+                };
+                if(inboundJson['audit']['auditable_type'] === 'comment') {
+                    getAhaFeature(pathList[pathList.length - 1], inboundJson['audit']['auditable_id']);
+                };
             };
         };
         if(req.query['s'] === 'slack') {
