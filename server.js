@@ -564,13 +564,9 @@ app.get('/test', function (req, res) {
         console.log(JSON.stringify(testJson));
         var auditUrl = testJson['audit'];
         if(req.query['company'] === 'pint') {
-            var testObject = {'comment': {
-                'body': 'This is some test comments',
-                'user': {'email': 'tpowell@pint.com'}
-                }
-            };
             //getAhaFeature('ZINGCHART-23', 'pint.aha.io');
-            postAhaComment('ZINGCHART-130', 'pint.aha.io', testObject);
+            //postAhaComment('ZINGCHART-130', 'pint.aha.io', testObject);
+            getAhaComment('6112813352982662954', 'pint.aha.io');
         }
         if(req.query['company'] === 'coopervision') {
             getAhaFeature('LF-78', 'websystem3.aha.io');
