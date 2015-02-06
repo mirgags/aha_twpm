@@ -1,4 +1,4 @@
-var fs = require('fs');
+vcdar fs = require('fs');
 var http = require('http');
 var https = require('https');
 var url = require('url');
@@ -116,7 +116,7 @@ function getTwpmTask (taskID, theResponse) {
     var options = {
         host: 'clients.pint.com',
         json: true,
-        path: '/tasks/3317039.json',
+        path: '/tasks/taskID.json',
         method: 'GET',
         followRedirect: true,
         checkServerIdentity: tls.checkServerIdentity(),
@@ -489,6 +489,7 @@ app.get('/test', function (req, res) {
     req.on('data', function(chunk) {
         body += chunk;
     });
+    var reqBody = JSON.parse(req.body);
     if(req.query['q'] === 'twpm') {
         //getTwpmTask(3317039, res);
         getTwpmComment(1352164, getTwpmComment);
