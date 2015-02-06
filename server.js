@@ -1,4 +1,4 @@
-vcdar fs = require('fs');
+var fs = require('fs');
 var http = require('http');
 var https = require('https');
 var url = require('url');
