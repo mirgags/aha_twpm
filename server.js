@@ -218,7 +218,7 @@ function getAhaComment(commentID, baseURL) {
     //console.log(authStr);
     var options = {
         host: baseURL,
-        path: '/api/v1/features/' + featureID,
+        path: '/api/v1/comments/' + featureID,
         port: 443,
         method: 'GET',
         headers: {
@@ -236,9 +236,9 @@ function getAhaComment(commentID, baseURL) {
         });
         response.on('end', function () {
             console.log(str);
-        };
-    };
-}
+        });
+    });
+};
 
 function postAhaComment(featureID, baseURL, reqObject) {
     var ahaKey = getKey('aha');
@@ -500,7 +500,7 @@ app.post('/hookcatch', function (req, res) {
                     getAhaFeature(pathList[pathList.length - 1], inboundJson['audit']);
                 };
                 if(inboundJson['audit']['auditable_type'] === 'comment') {
-                    getAhaFeature(pathList[pathList.length - 1], inboundJson['audit']['auditable_id']);
+                    getAhaComment(pathList[pathList.length - 1], inboundJson['audit']['auditable_id']);
                 };
             };
         };
