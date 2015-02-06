@@ -72,6 +72,9 @@ function addMap(featureID, service, mapToID) {
     console.log(theJSON);
     console.log('adding ahaID: ' + featureID);
     var idString = uuid.v4();
+    while (theJSON[idString] !== undefined) {
+        idString = uuid.v4();
+    };
     if(service === 'aha') {
         theJSON['map'][idString] = {"aha": featureID, "twpm": mapToID};
         theJSON['aha'][featureID] = idString;
@@ -207,6 +210,50 @@ function getAhaFeature (featureID, baseURL) {
     httpReq.end();
 }
 
+function postAhaComment(featureID, baseURL, reqObject) {
+    var ahaKey = getKey('aha');
+    console.log('featureID1: ' + featureID);
+    var buff = new Buffer(ahaKey);
+    var authStr = buff.toString('base64');
+    //console.log(authStr);
+    var options = {
+        host: baseURL,
+        path: '/api/v1/features/' + featureID + '/comments',
+        port: 443,
+        method: 'POST',
+        headers: {
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+            'Content-Length': JSON.stringify(reqObject).length,
+            'Authorization': 'Basic ' + authStr,
+            'User-Agent': 'Test Integration Script (mmiraglia@pint.com)'
+        }
+    };
+    var httpReq = https.request(options, function (response) {
+        var str = '';
+        response.on('data', function(chunk) {
+            str += chunk;
+            console.log('data received: ');
+        });
+        response.on('end', function () {
+            console.log('twpm response: ' + JSON.stringify(str));
+            var ahaResp = JSON.parse(str);
+            /*var ahaTwpmMap = getMap(featureID, 'aha');
+            var newObject = {'comment': {
+                'body': reqObject['body'],
+                'user': {'email': 'tpowell@pint.com'}
+                }
+            };
+            */
+        });
+        response.on('error', function(e) {
+            console.log('ERROR: ' + e.message);
+        });
+    });
+    httpReq.write(JSON.stringify(reqObject));
+    httpReq.end();
+}
+
 function testSlack (theResponse) {
     var attachJson = JSON.parse('[{"pretext": "pre-hello","text":"text-world"}]');
     var reqObject = {
@@ -299,23 +346,6 @@ function createTWPMTask (taskListID, theRequest, reqObject, callback2) {
     console.log('encrypted: ' + authStr);
     console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
     options['headers']['Authorization'] = 'Basic ' + authStr;
-/*    var reqObject = {'todo-item': {
-                'content': 'test title',
-                'description': 'test description',
-                'responsible-party-id': '86917',
-
-                'start-date': 
-                 wholeBody.feature.release.start_date.replace(/-/g, ''),
-                'due-date':
-                 wholeBody.feature.release.release_date.replace(/-/g, ''),
-                'start-date': '',
-                'due-date': '',
-    //            'estimated-minutes': '99',
-                'creator-id': '84418',
-                'responsible-party-ids': '86917'
-                    }
-                };
-*/
     var params = JSON.stringify(reqObject);
     options['headers']['Content-Length'] = params.length;
     console.log(JSON.stringify(options));
@@ -323,8 +353,6 @@ function createTWPMTask (taskListID, theRequest, reqObject, callback2) {
     var httpReq = http.request(options, function (response) {
     	var str = '';
     	response.on('data', function(chunk) {
-//    	response.on('data', function(data) {
-//            str += data;
     	    str += chunk;
             console.log('data received: ');
     	});
@@ -343,6 +371,48 @@ function createTWPMTask (taskListID, theRequest, reqObject, callback2) {
     httpReq.end();
 };
 
+function getTwpmComment(commentID, callback) {
+    console.log('in getTwpmComment');
+    var options = {
+                host: 'clients.pint.com',
+                json: true,
+                path: '/comments/' + commentID + '.json',
+                method: 'GET',
+                followRedirect: true,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Content-Length': '',
+                    'Authorization': ''
+                    }
+                };
+    console.log('options' + JSON.stringify(options));
+    var twpmKey = getKey('twpm');
+    var buff = new Buffer(twpmKey + ':X');
+    var authStr = buff.toString('base64');
+    console.log('encrypted: ' + authStr);
+    console.log('unencrypted: ' + new Buffer(authStr, 'base64').toString());
+    options['headers']['Authorization'] = 'Basic ' + authStr;
+    var httpReq = http.request(options, function (response) {
+    var str = '';
+    response.on('data', function(chunk) {
+            str += chunk;
+            console.log('data received: ');
+        });
+        response.on('end', function () {
+            console.log('hit request end');
+            console.log('tw response: ' + str);
+            console.log(response.statusCode);
+            var twpmJson = JSON.parse(str);
+            callback(twpmJson['commentable-id'], 'pint.aha.io', twpmJson);
+        });
+        response.on('error', function(e) {
+            console.log('ERROR: ' + e.message);
+        });
+    });
+    httpReq.end();
+};
+
 app.post('/hookcatch', function (req, res) { 
     console.log('*****');
     console.log('initial url: ' + req.url);
@@ -358,61 +428,10 @@ app.post('/hookcatch', function (req, res) {
     console.log('body: \n' + req.body);
     console.log('querystring: ' + req.query);
     if(req.query['q'] === 'aha') {
-        var wholeBody = JSON.parse(req.body);
-        console.log(wholeBody);
-        res.writeHead(200,{'Content-Type': 'text/html'});
-	    if(wholeBody['audit']['auditable_type'] === 'feature') {
-            if(wholeBody['audit']['audit_action'] === 'create') {
-                for (i=0;i<wholeBody['audit']['changes'].length;i++) {
-                    if (wholeBody['audit']['changes'][i]['field_name'] === 'Reference num') {
-                        var featureValue = wholeBody['audit']['changes'][i]['value'];
-                    };
-                };
-                console.log('shold create task here');
-                var taskObject = {'todo-item': {
-              	'content': '',
-                'description': JSON.stringify(wholeBody),
-                'responsible-party-id': '86917',
-/*
-                'start-date': 
-                 wholeBody.feature.release.start_date.replace(/-/g, ''),
-                'due-date':
-                 wholeBody.feature.release.release_date.replace(/-/g, ''),
-*/
-                'start-date': '',
-                'due-date': '',
-    //            'estimated-minutes': '99',
-                'creator-id': '84418',
-                'responsible-party-ids': '86917'
-                }
-                };
-		for(i=0;i<wholeBody['audit']['changes'].length;i++) {
-		    if(wholeBody['audit']['changes'][i]['field_name']==='Name'){
-			taskObject['todo-item']['content'] = wholeBody['audit']['changes'][i]['value'];
-		    };
-		};
-                var taskOptions = {
-            	host: 'clients.pint.com',
-                json: true,
-            	path: '/tasklists/562384/tasks.json',
-            	method: 'POST',
-                followRedirect: true,
-            	headers: {
-            	    'Accept': 'application/json',
-            	    'Content-Type': 'application/json',
-                    'Content-Length': '',
-            	    'Authorization': ''
-                    }
-                };
-                getAhaFeature (featureValue, res, taskObject, taskOptions)
-                //createTWPMTask (taskObject, taskOptions, res);
-                //console.log('feature: ' + wholeBody.feature.name);
-            }
-	}
+    }
 	else {
 	    res.end('Webhook received');
 	};
-    };
     if(req.query['q'] === 'twpm') {
         var wholeBody = decodeURI(req.body);
         console.log(typeof wholeBody);
@@ -432,29 +451,13 @@ app.post('/hookcatch', function (req, res) {
 
     if(req.query['q'] === 'slack') {
         testSlack(res);
-        /*
-        var wholeBody = decodeURI(req.body);
-        console.log(typeof wholeBody);
-        for(key in req.query) {
-            console.log(key + ': ' + req.query[key]);
-        };
-        var parameters = {}, temp, queries;
-        queries = wholeBody.split('&');
-        console.log('queries length: ' + queries.length);
-        for(i=0;i<queries.length;i++) {
-            temp = queries[i].split('=');
-            parameters[temp[0]] = temp[1];
-        };
-        console.log(JSON.stringify(parameters));
-        console.log('should update twpm feature here');
-        */
     };
     if(req.query['q'] === 'test') {
         var inboundJson = JSON.parse(req.body);
         console.log(JSON.stringify(inboundJson));
         if(req.query['s'] === 'twpm') {
             //getTwpmTask(3317039, res);
-            createTWPMTask(562384, req, res);
+            getTwpmComment(1352164);
         };
         if(req.query['s'] === 'aha') {
             var auditUrl = inboundJson['audit']['auditable_url'];
@@ -488,7 +491,7 @@ app.get('/test', function (req, res) {
     });
     if(req.query['q'] === 'twpm') {
         //getTwpmTask(3317039, res);
-        createTWPMTask(562384, req, res);
+        getTwpmComment(1352164, getTwpmComment);
     };
     if(req.query['q'] === 'aha') {
         console.log('hit it');
@@ -525,7 +528,13 @@ app.get('/test', function (req, res) {
         console.log(JSON.stringify(testJson));
         var auditUrl = testJson['audit'];
         if(req.query['company'] === 'pint') {
-            getAhaFeature('ZINGCHART-23', 'pint.aha.io');
+            var testObject = {'comment': {
+                'body': 'This is some test comments',
+                'user': {'email': 'tpowell@pint.com'}
+                }
+            };
+            //getAhaFeature('ZINGCHART-23', 'pint.aha.io');
+            postAhaComment('ZINGCHART-130', 'pint.aha.io', testObject);
         }
         if(req.query['company'] === 'coopervision') {
             getAhaFeature('LF-78', 'websystem3.aha.io');
