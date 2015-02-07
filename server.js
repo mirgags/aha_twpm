@@ -196,7 +196,6 @@ function getAhaFeature (featureID, baseURL) {
                 };
                 console.log('featureID3: ' + featureID);
                 var twpmID = createTWPMTask(taskListID, featureID, reqObject ,function(ahaID, respTaskID, func) {
-
                     console.log('key: ' + ahaID + ', value:' + respTaskID);
                     console.log('featureID: ' + featureID);
                     func(ahaID, 'aha', respTaskID);
@@ -212,13 +211,13 @@ function getAhaFeature (featureID, baseURL) {
 
 function getAhaComment(commentID, baseURL) {
     var ahaKey = getKey('aha');
-    console.log('featureID1: ' + featureID);
+    console.log('featureID1: ' + commentID);
     var buff = new Buffer(ahaKey);
     var authStr = buff.toString('base64');
     //console.log(authStr);
     var options = {
         host: baseURL,
-        path: '/api/v1/comments/' + featureID,
+        path: '/api/v1/comments/' + commentID,
         port: 443,
         method: 'GET',
         headers: {
@@ -236,8 +235,32 @@ function getAhaComment(commentID, baseURL) {
         });
         response.on('end', function () {
             console.log(str);
+            var commentJson = JSON.parse(str);
+            for(thing in commentJson['comment']) {
+                console.log('aha resp ** ' + thing + ': ' + commentJson['comment'][thing]);
+            };
+            var user = commentJson['comment']['user'];
+            var pathList = url.parse(commentJson['comment']['commentable']['url']).pathname.split('/');
+            console.log(JSON.stringify(pathList));
+            var ahaID = pathList[pathList.length - 1];
+            var ahaTwpmMap = getMap(ahaID, 'aha');
+            var commentObject = {
+                "comment": {
+                    "body": commentJson['comment']['body'],
+                    "notify": "",
+                    "isprivate": false,
+                    "pendingFileAttachments": ""
+                }
+            };
+            if(typeof ahaTwpmMap === 'undefined') {
+                var ahaTwpmMap = createTWPMTask(598932, ahaID, commentObject ,function(ahaID, respTaskID, func) {
+                    func(ahaID, 'aha', respTaskID);
+                    postAhaComment(ahaTwpmMap, 'pint.aha.io', commentObject);
+                });
+            };
         });
     });
+    httpReq.end()
 };
 
 function postAhaComment(featureID, baseURL, reqObject) {
@@ -401,6 +424,45 @@ function createTWPMTask (taskListID, theRequest, reqObject, callback2) {
     httpReq.end();
 };
 
+function postTWPMComment (taskID, postObject) {
+    var options = {
+                host: 'clients.pint.com',
+                json: true,
+                path: '/' + taskID + '/comments.json',
+                method: 'POST',
+                followRedirect: true,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Content-Length': '',
+                    'Authorization': ''
+                    }
+                };
+    var twpmKey = getKey('twpm');
+    var buff = new Buffer(twpmKey + ':X');
+    var authStr = buff.toString('base64');
+    options['headers']['Authorization'] = 'Basic ' + authStr;
+    var params = JSON.stringify(postObject);
+    options['headers']['Content-Length'] = params.length;
+    var httpReq = http.request(options, function (response) {
+        var str = '';
+        response.on('data', function(chunk) {
+            str += chunk;
+            console.log('data received: ');
+        });
+        response.on('end', function () {
+            console.log('hit request end');
+            console.log('tw response: ' + str);
+            console.log(response.statusCode);
+        });
+        response.on('error', function(e) {
+            console.log('ERROR: ' + e.message);
+        });
+    });
+    httpReq.write(params);
+    httpReq.end();
+};
+
 function getTwpmComment(commentID, callback) {
     console.log('in getTwpmComment');
     var options = {
@@ -524,7 +586,6 @@ app.get('/test', function (req, res) {
     req.on('data', function(chunk) {
         body += chunk;
     });
-    var reqBody = JSON.parse(req.body);
     if(req.query['q'] === 'twpm') {
         //getTwpmTask(3317039, res);
         getTwpmComment(1352164, getTwpmComment);
@@ -566,7 +627,7 @@ app.get('/test', function (req, res) {
         if(req.query['company'] === 'pint') {
             //getAhaFeature('ZINGCHART-23', 'pint.aha.io');
             //postAhaComment('ZINGCHART-130', 'pint.aha.io', testObject);
-            getAhaComment('6112813352982662954', 'pint.aha.io');
+            getAhaComment('6109948231776001239', 'pint.aha.io');
         }
         if(req.query['company'] === 'coopervision') {
             getAhaFeature('LF-78', 'websystem3.aha.io');
