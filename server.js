@@ -253,11 +253,19 @@ function getAhaComment(commentID, baseURL) {
                 }
             };
             if(typeof ahaTwpmMap === 'undefined') {
+                /*
                 var ahaTwpmMap = createTWPMTask(598932, ahaID, commentObject ,function(ahaID, respTaskID, func) {
                     func(ahaID, 'aha', respTaskID);
-                    postAhaComment(ahaTwpmMap, 'pint.aha.io', commentObject);
+                    postAhaComment(ahaID, 'pint.aha.io', commentObject);
                 });
-            };
+                */
+                var ahaTwpmMap = function (ahaNewID, commentNewID, featureCallback, commentCallback) {
+                    
+                };
+                ahaTwpmMap(ahaID, commentID, getAhaFeature, getAhaComment);
+            } else {
+                postAhaComment(commentID, 'pint.aha.io', commentObject);
+            }; 
         });
     });
     httpReq.end()
@@ -627,7 +635,7 @@ app.get('/test', function (req, res) {
         if(req.query['company'] === 'pint') {
             //getAhaFeature('ZINGCHART-23', 'pint.aha.io');
             //postAhaComment('ZINGCHART-130', 'pint.aha.io', testObject);
-            getAhaComment('6109948231776001239', 'pint.aha.io');
+            getAhaComment('6109951676347277830', 'pint.aha.io');
         }
         if(req.query['company'] === 'coopervision') {
             getAhaFeature('LF-78', 'websystem3.aha.io');
