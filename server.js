@@ -260,9 +260,13 @@ function getAhaComment(commentID, baseURL) {
                 });
                 */
                 var ahaTwpmMap = function (ahaNewID, commentNewID, featureCallback, commentCallback) {
-                    
+                    featureCallback(ahaID, 'pint.aha.io');
+                    commentCallback(commentNewID);
                 };
-                ahaTwpmMap(ahaID, commentID, getAhaFeature, getAhaComment);
+                ahaTwpmMap(ahaID, commentID, getAhaFeature, function (commentID) {
+                    console.log('*****\npassed callback\n*****');
+                    getAhaComment(commentID);
+                });
             } else {
                 postAhaComment(commentID, 'pint.aha.io', commentObject);
             }; 
