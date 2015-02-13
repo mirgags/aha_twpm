@@ -6,6 +6,7 @@ var qs = require('querystring');
 var express = require('express');
 var bodyParser = require('body-parser');
 var uuid = require('node-uuid');
+var async = require('async');
 var tls = require('tls');
 tls.checkServerIdentity = function (host, cert) {
     return undefined;
@@ -252,24 +253,28 @@ function getAhaComment(commentID, baseURL) {
                     "pendingFileAttachments": ""
                 }
             };
-            if(typeof ahaTwpmMap === 'undefined') {
-                /*
-                var ahaTwpmMap = createTWPMTask(598932, ahaID, commentObject ,function(ahaID, respTaskID, func) {
-                    func(ahaID, 'aha', respTaskID);
-                    postAhaComment(ahaID, 'pint.aha.io', commentObject);
-                });
-                */
-                var ahaTwpmMap = function (ahaNewID, commentNewID, featureCallback, commentCallback) {
-                    featureCallback(ahaID, 'pint.aha.io');
-                    commentCallback(commentNewID);
+            if(ahaTwpmMap === undefined) {
+                var postToTwpm = function(ahaKey, theUrl, commentKey, commentObj, callback) {
+                    getAhaFeature(ahaKey, theUrl);
+                    console.log('*****\nahaTWMPMap\n*****');
+                    callback(commentKey, commentObj);
                 };
-                ahaTwpmMap(ahaID, commentID, getAhaFeature, function (commentID) {
-                    console.log('*****\npassed callback\n*****');
-                    getAhaComment(commentID);
-                });
+                postToTwpm(ahaID, baseURL, commentJson['comment']['id'], commentObject, getAhaComment);
+                /*
+                async.series([
+                    function(callback) {
+                        getAhaFeature(ahaID, baseURL);
+                        callback();
+                    },
+                     function(callback) {
+                        postTWPMComment(ahaTwpmMap, baseURL, commentObject);
+                        callback();
+                    }
+                ]);
+                */
             } else {
-                postAhaComment(commentID, 'pint.aha.io', commentObject);
-            }; 
+                postTWPMComment(ahaTwpmMap, baseURL, commentObject);
+            };
         });
     });
     httpReq.end()
@@ -440,7 +445,7 @@ function postTWPMComment (taskID, postObject) {
     var options = {
                 host: 'clients.pint.com',
                 json: true,
-                path: '/' + taskID + '/comments.json',
+                path: '/tasks/' + taskID + '/comments.json',
                 method: 'POST',
                 followRedirect: true,
                 headers: {
@@ -450,6 +455,7 @@ function postTWPMComment (taskID, postObject) {
                     'Authorization': ''
                     }
                 };
+    console.log('TW COmment Post: ' + JSON.stringify(postObject));
     var twpmKey = getKey('twpm');
     var buff = new Buffer(twpmKey + ':X');
     var authStr = buff.toString('base64');
