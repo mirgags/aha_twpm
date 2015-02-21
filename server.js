@@ -254,12 +254,13 @@ function getAhaComment(commentID, baseURL) {
                 }
             };
             if(ahaTwpmMap === undefined) {
-                var postToTwpm = function(ahaKey, theUrl, commentKey, commentObj, callback) {
-                    getAhaFeature(ahaKey, theUrl);
-                    console.log('*****\nahaTWMPMap\n*****');
-                    callback(commentKey, commentObj);
-                };
-                postToTwpm(ahaID, baseURL, commentJson['comment']['id'], commentObject, getAhaComment);
+                var taskListID = 598932;
+                var twpmID = createTWPMTask(taskListID, featureID, reqObject ,function(ahaID, respTaskID, func) {
+                    console.log('key: ' + ahaID + ', value:' + respTaskID);
+                    console.log('featureID: ' + featureID);
+                    return func(ahaID, 'aha', respTaskID);
+                });
+                postTWPMComment(twpmID, baseURL, commentObject);
                 /*
                 async.series([
                     function(callback) {
@@ -431,7 +432,7 @@ function createTWPMTask (taskListID, theRequest, reqObject, callback2) {
             console.log('tw response: ' + str);
             console.log(response.statusCode);
             var twpmJson = JSON.parse(str);
-            callback2(theRequest, twpmJson['id'], addMap);
+            return callback2(theRequest, twpmJson['id'], addMap);
         });
         response.on('error', function(e) {
             console.log('ERROR: ' + e.message);
