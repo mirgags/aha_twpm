@@ -255,26 +255,28 @@ function getAhaComment(commentID, baseURL) {
             };
             if(ahaTwpmMap === undefined) {
                 var taskListID = 598932;
-                var twpmID = createTWPMTask(taskListID, featureID, reqObject ,function(ahaID, respTaskID, func) {
+                /*
+                var twpmID = createTWPMTask(taskListID, ahaID, reqObject ,function(ahaID, respTaskID, func) {
                     console.log('key: ' + ahaID + ', value:' + respTaskID);
                     console.log('featureID: ' + featureID);
                     return func(ahaID, 'aha', respTaskID);
                 });
                 postTWPMComment(twpmID, baseURL, commentObject);
-                /*
+                */
+                
                 async.series([
                     function(callback) {
-                        getAhaFeature(ahaID, baseURL);
-                        callback();
+                        var theID = getAhaFeature(ahaID, baseURL);
+                        callback(null, theID);
                     },
                      function(callback) {
-                        postTWPMComment(ahaTwpmMap, baseURL, commentObject);
-                        callback();
+                        postTWPMComment(ahaTwpmMap, commentObject);
+                        callback(null, 'complete');
                     }
                 ]);
-                */
+                
             } else {
-                postTWPMComment(ahaTwpmMap, baseURL, commentObject);
+                postTWPMComment(ahaTwpmMap, commentObject);
             };
         });
     });
