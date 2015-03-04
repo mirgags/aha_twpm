@@ -51,14 +51,18 @@ function getMap(featureID, service) {
     console.log(theJSON);
     var theMapID = theJSON[service][featureID]
     try {
-        var key = theJSON['map'][theMapID][service];
+        if(service === 'aha') {
+            var key = theJSON['map'][theMapID]['twpm'];
+        } else {
+            var key = theJSON['map'][theMapID]['aha'];
+        };
     }
     catch(e) {
         var key = undefined;
     }
     //key = key.replace(/^\s+|\s+$/g, '');
     return key;
-}
+};
 
 function addMap(featureID, service, mapToID) {
     var theData = fs.readFileSync('./map.json', 'utf-8', function (err, data) {
@@ -269,8 +273,8 @@ function getAhaComment(commentID, baseURL) {
                         var theID = getAhaFeature(ahaID, baseURL);
                         callback(null, theID);
                     },
-                     function(callback) {
-                        postTWPMComment(ahaTwpmMap, commentObject);
+                     function(theID, callback) {
+                        postTWPMComment(theID, commentObject);
                         callback(null, 'complete');
                     }
                 ]);
