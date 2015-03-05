@@ -274,8 +274,9 @@ function getAhaComment(commentID, baseURL) {
                         callback(null, theID);
                     },
                      function(theID, callback) {
+                        console.log('2nd series func executed');
                         postTWPMComment(theID, commentObject);
-                        callback(null, 'complete');
+                        callback();
                     }
                 ]);
                 
